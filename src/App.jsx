@@ -1,4 +1,30 @@
-import { useState } from 'react'
+/**
+ * App
+ * ───
+ * FILE    src/App.jsx
+ * OWNER   dontpanic (only dontpanic edits this file)
+ *
+ * PURPOSE
+ *   The route table. Replaces the Vite demo below.
+ *
+ * REQUIREMENTS
+ *   1. npm install react-router-dom; in src/main.jsx wrap the app as:
+ *      <BrowserRouter><SettingsProvider><QuizLibraryProvider><QuizProvider><App/>...
+ *   2. <Routes> with <Route element={<Layout />}> as parent of every page:
+ *        /                 HomePage          (tesroth)
+ *        /settings         SettingsPage      (tesroth)
+ *        /quiz             QuizPage          (chea)   also handles ?set=<id>
+ *        /results          ResultsPage       (chea)
+ *        /leaderboard      LeaderboardPage   (tesroth)
+ *        /my-quizzes       MyQuizzesPage     (tesroth)
+ *        /create           CreateQuizPage    (tesroth)
+ *        /create/:quizId   CreateQuizPage    (tesroth, edit mode)
+ *        *                 NotFoundPage      (dontpanic)
+ *      Paths come from ROUTES in src/siteConfig.js.
+ *   3. Delete App.css and the demo images in src/assets once unused.
+ *   4. Deployment: the server must serve index.html for every path so
+ *      refreshing /quiz or /leaderboard does not 404.
+ */import { useState } from 'react'
 import heroImg from './assets/hero.png'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'

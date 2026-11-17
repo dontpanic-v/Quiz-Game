@@ -1,3 +1,13 @@
+/**
+ * main
+ * ────
+ * FILE    src/main.jsx
+ * OWNER   dontpanic (only dontpanic edits this file)
+ *
+ * PURPOSE
+ *   Entry point. Wraps the app in the router and all context providers:
+ *   <BrowserRouter> > <SettingsProvider> > <QuizLibraryProvider> > <QuizProvider> > <App />
+ */
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
