@@ -1,30 +1,184 @@
 /**
- * QuestionEditor
- * ──────────────
- * FILE    src/components/QuizBuilder/QuestionEditor.jsx  (+ QuestionEditor.module.css)
- * OWNER   tesroth (only tesroth edits this file)
- *
- * PURPOSE
- *   Form block for ONE question inside CreateQuizPage. Controlled component:
- *   no own copy of the data, every change goes up through onChange.
- *
- * EXPORT
- *   export default function QuestionEditor({ index, value, errors, onChange, onRemove, canRemove })
- *
- * PROPS
- *   index      number            0-based, shown as "Question 1"
- *   value      { id, question, answers: string[], correctAnswer }
- *   errors     { question?: string, answers?: string, correctAnswer?: string }
- *   onChange   (nextValue) => void   always pass a NEW object (no mutation)
- *   onRemove   () => void
- *   canRemove  boolean           false when it's the only question
- *
- * REQUIREMENTS
- *   1. <fieldset> with <legend>"Question {index + 1}"</legend>
- *   2. Textarea for the question text
- *   3. 2–4 answer rows: radio "correct" + text input + remove (×) when more than 2
- *      "Add answer" button while fewer than 4
- *   4. Typing in an answer that is the correctAnswer keeps it selected (update both)
- *   5. Error messages under the matching field, inputs get aria-invalid
- *   6. Every input has a <label> (visually hidden is fine for answer inputs)
+ * QuestionEditor — Controlled form block for editing one custom question.
+ * PROPS: { index, value, errors, onChange, onRemove, canRemove }
  */
+import styles from './QuestionEditor.module.css'
+
+export default function QuestionEditor({
+  index,
+  value,
+  errors = {},
+  onChange,
+  onRemove,
+  canRemove = true,
+}) {
+  const { question = '', answers = ['', ''], correctAnswer = '' } = value || {}
+
+  function handleQuestionChange(e) {
+    onChange({
+      ...value,
+      question: e.target.value,
+    })
+  }
+
+  function handleAnswerTextChange(answerIdx, newText) {
+    const nextAnswers = [...answers]
+    const oldText = nextAnswers[answerIdx]
+    nextAnswers[answerIdx] = newText
+
+    const isCurrentCorrect = correctAnswer === oldText
+    onChange({
+      ...value,
+      answers: nextAnswers,
+      correctAnswer: isCurrentCorrect ? newText : correctAnswer,
+    })
+  }
+
+  function handleRadioSelect(selectedAnswer) {
+    onChange({
+      ...value,
+      correctAnswer: selectedAnswer,
+    })
+  }
+
+  function handleAddAnswer() {
+    if (answers.length >= 4) return
+    onChange({
+      ...value,
+      answers: [...answers, ''],
+    })
+  }
+
+  function handleRemoveAnswer(answerIdx) {
+    if (answers.length <= 2) return
+    const removedText = answers[answerIdx]
+    const nextAnswers = answers.filter((_, idx) => idx !== answerIdx)
+    const isRemovedCorrect = correctAnswer === removedText
+
+    onChange({
+      ...value,
+      answers: nextAnswers,
+      correctAnswer: isRemovedCorrect ? '' : correctAnswer,
+    })
+  }
+
+  const questionInputId = `q-text-${index}`
+  const questionErrorId = `q-err-${index}`
+  const answersErrorId = `ans-err-${index}`
+  const correctErrorId = `cor-err-${index}`
+
+  return (
+    <fieldset className={styles.fieldset}>
+      <div className={styles.header}>
+        <legend className={styles.legend}>Question {index + 1}</legend>
+        {canRemove && (
+          <button
+            type="button"
+            onClick={onRemove}
+            className={styles.removeQuestionBtn}
+            aria-label={`Remove question ${index + 1}`}
+          >
+            Remove Question
+          </button>
+        )}
+      </div>
+
+      <div className={styles.fieldGroup}>
+        <label htmlFor={questionInputId} className={styles.label}>
+          Question prompt <span className={styles.required}>*</span>
+        </label>
+        <textarea
+          id={questionInputId}
+          value={question}
+          onChange={handleQuestionChange}
+          placeholder="e.g. What is the capital of France?"
+          rows={3}
+          className={`${styles.textarea} ${errors.question ? styles.inputError : ''}`}
+          aria-invalid={Boolean(errors.question)}
+          aria-describedby={errors.question ? questionErrorId : undefined}
+        />
+        {errors.question && (
+          <p id={questionErrorId} className={styles.errorText}>
+            {errors.question}
+          </p>
+        )}
+      </div>
+
+      <div className={styles.answersSection}>
+        <div className={styles.answersHeader}>
+          <span className={styles.answersTitle}>
+            Answers (2–4 options, choose the correct one) <span className={styles.required}>*</span>
+          </span>
+          {answers.length < 4 && (
+            <button
+              type="button"
+              onClick={handleAddAnswer}
+              className={styles.addAnswerBtn}
+            >
+              + Add option
+            </button>
+          )}
+        </div>
+
+        {errors.answers && (
+          <p id={answersErrorId} className={styles.errorText}>
+            {errors.answers}
+          </p>
+        )}
+
+        {errors.correctAnswer && (
+          <p id={correctErrorId} className={styles.errorText}>
+            {errors.correctAnswer}
+          </p>
+        )}
+
+        <div className={styles.answersList}>
+          {answers.map((answer, aIdx) => {
+            const isCorrect = correctAnswer !== '' && correctAnswer === answer
+            const answerInputId = `q-${index}-ans-${aIdx}`
+            const radioId = `q-${index}-rad-${aIdx}`
+
+            return (
+              <div
+                key={aIdx}
+                className={`${styles.answerRow} ${isCorrect ? styles.correctRow : ''}`}
+              >
+                <input
+                  type="radio"
+                  id={radioId}
+                  name={`correct-answer-${index}`}
+                  value={answer}
+                  checked={isCorrect}
+                  onChange={() => handleRadioSelect(answer)}
+                  className={styles.radioInput}
+                  aria-label={`Mark option ${aIdx + 1} as correct answer`}
+                />
+                <label htmlFor={answerInputId} className={styles.srOnly}>
+                  Option {aIdx + 1}
+                </label>
+                <input
+                  type="text"
+                  id={answerInputId}
+                  value={answer}
+                  onChange={(e) => handleAnswerTextChange(aIdx, e.target.value)}
+                  placeholder={`Option ${aIdx + 1}`}
+                  className={`${styles.answerInput} ${isCorrect ? styles.correctInput : ''}`}
+                />
+                {answers.length > 2 && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveAnswer(aIdx)}
+                    className={styles.removeAnswerBtn}
+                    aria-label={`Remove option ${aIdx + 1}`}
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </fieldset>
+  )
+}
