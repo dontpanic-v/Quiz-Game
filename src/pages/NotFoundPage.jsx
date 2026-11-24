@@ -1,35 +1,33 @@
 /**
- * NotFoundPage — 404 handler for unmatched routes.
+ * NotFoundPage
+ * ────────────
+ * FILE    src/pages/NotFoundPage.jsx  (+ NotFoundPage.module.css)
+ * OWNER   dontpanic (only dontpanic edits this file)
+ * ROUTE   *  (any unknown URL)
+ *
+ * EXPORT
+ *   export default function NotFoundPage()
+ *
+ * BEHAVIOR
+ *   Friendly "Page not found" heading, short message, link back to Home.
  */
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { ROUTES } from '../siteConfig.js'
+import styles from './NotFoundPage.module.css'
 
 export default function NotFoundPage() {
+  const { pathname } = useLocation()
+
   return (
-    <div style={{ textAlign: 'center', padding: '64px 16px' }}>
-      <h1 style={{ fontSize: '36px', color: 'var(--text-h)', margin: '0 0 12px' }}>
-        404 - Page Not Found
-      </h1>
-      <p style={{ fontSize: '16px', color: 'var(--text)', margin: '0 0 24px' }}>
-        The page you are looking for does not exist.
+    <section className={styles.page}>
+      <p className={styles.code} aria-hidden="true">404</p>
+      <h1 className={styles.title}>Page not found</h1>
+      <p className={styles.message}>
+        There is no page at <code>{pathname}</code>. It may have moved, or the link is wrong.
       </p>
-      <Link
-        to={ROUTES.home}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '44px',
-          padding: '10px 24px',
-          background: 'var(--accent)',
-          color: '#fff',
-          borderRadius: '8px',
-          fontWeight: 600,
-          textDecoration: 'none',
-        }}
-      >
+      <Link to={ROUTES.home} className="button">
         Back to Home
       </Link>
-    </div>
+    </section>
   )
 }
