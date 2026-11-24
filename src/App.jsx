@@ -1,7 +1,25 @@
 /**
- * App — Route configuration table.
+ * App
+ * ───
+ * FILE    src/App.jsx
+ * OWNER   dontpanic (only dontpanic edits this file)
+ *
+ * PURPOSE
+ *   The route table. <Layout /> is the parent of every page.
+ *     /                 HomePage          (tesroth)
+ *     /settings         SettingsPage      (tesroth)
+ *     /quiz             QuizPage          (chea)   also handles ?set=<id>
+ *     /results          ResultsPage       (chea)
+ *     /leaderboard      LeaderboardPage   (tesroth)
+ *     /my-quizzes       MyQuizzesPage     (tesroth)
+ *     /create           CreateQuizPage    (tesroth)
+ *     /create/:quizId   CreateQuizPage    (tesroth, edit mode)
+ *     *                 NotFoundPage      (dontpanic)
+ *   Paths come from ROUTES in src/siteConfig.js.
+ *
+ * TODO  Replace ComingSoon with chea's QuizPage and ResultsPage once merged.
  */
-import { Routes, Route } from 'react-router-dom'
+import { Link, Route, Routes } from 'react-router-dom'
 import { ROUTES } from './siteConfig.js'
 import Layout from './components/Layout/Layout.jsx'
 import HomePage from './pages/HomePage.jsx'
@@ -11,59 +29,16 @@ import MyQuizzesPage from './pages/MyQuizzesPage.jsx'
 import CreateQuizPage from './pages/CreateQuizPage.jsx'
 import NotFoundPage from './pages/NotFoundPage.jsx'
 
-function QuizPlaceholder() {
+// Temporary stand-in for pages that are not merged yet.
+function ComingSoon({ title }) {
   return (
-    <div style={{ textAlign: 'center', padding: '60px 16px' }}>
-      <h2>Quiz Gameplay</h2>
-      <p style={{ margin: '12px 0 24px', color: 'var(--text)' }}>
-        Chea is building the live gameplay screen and Open Trivia DB integration.
-        <br />
-        In the meantime, you can create and manage custom quizzes in <strong>My Quizzes</strong>, customize options in <strong>Settings</strong>, or view past scores in <strong>Leaderboard</strong>!
-      </p>
-      <a
-        href="/"
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          minHeight: '44px',
-          padding: '8px 20px',
-          background: 'var(--accent)',
-          color: '#fff',
-          borderRadius: '8px',
-          textDecoration: 'none',
-          fontWeight: 600,
-        }}
-      >
+    <section className="placeholder">
+      <h2>{title}</h2>
+      <p>This page is still being built.</p>
+      <Link to={ROUTES.home} className="button">
         Back to Home
-      </a>
-    </div>
-  )
-}
-
-function ResultsPlaceholder() {
-  return (
-    <div style={{ textAlign: 'center', padding: '60px 16px' }}>
-      <h2>Results Page</h2>
-      <p style={{ margin: '12px 0 24px', color: 'var(--text)' }}>
-        Chea is implementing the results summary screen.
-      </p>
-      <a
-        href="/"
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          minHeight: '44px',
-          padding: '8px 20px',
-          background: 'var(--accent)',
-          color: '#fff',
-          borderRadius: '8px',
-          textDecoration: 'none',
-          fontWeight: 600,
-        }}
-      >
-        Back to Home
-      </a>
-    </div>
+      </Link>
+    </section>
   )
 }
 
@@ -73,8 +48,8 @@ export default function App() {
       <Route element={<Layout />}>
         <Route path={ROUTES.home} element={<HomePage />} />
         <Route path={ROUTES.settings} element={<SettingsPage />} />
-        <Route path={ROUTES.quiz} element={<QuizPlaceholder />} />
-        <Route path={ROUTES.results} element={<ResultsPlaceholder />} />
+        <Route path={ROUTES.quiz} element={<ComingSoon title="Quiz" />} />
+        <Route path={ROUTES.results} element={<ComingSoon title="Results" />} />
         <Route path={ROUTES.leaderboard} element={<LeaderboardPage />} />
         <Route path={ROUTES.myQuizzes} element={<MyQuizzesPage />} />
         <Route path={ROUTES.create} element={<CreateQuizPage />} />
