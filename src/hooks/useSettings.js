@@ -10,8 +10,14 @@
  * EXPORT
  *   export function useSettings()
  *   -> { settings, updateSettings, history, addResult, clearHistory }
- *
- * REQUIREMENTS
- *   1. return useContext(SettingsContext)
- *   2. if the value is null, throw Error('useSettings must be used inside <SettingsProvider>')
  */
+import { useContext } from 'react'
+import { SettingsContext } from '../context/settingsContextObject.js'
+
+export function useSettings() {
+  const value = useContext(SettingsContext)
+  if (value === null) {
+    throw new Error('useSettings must be used inside <SettingsProvider>')
+  }
+  return value
+}
