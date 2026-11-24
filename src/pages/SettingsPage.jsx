@@ -1,5 +1,5 @@
 /**
- * SettingsPage — Configure player preferences, difficulty, question count, category, and theme.
+ * SettingsPage — Configure player preferences, difficulty, question count, and category.
  * ROUTE: /settings
  */
 import { useState, useEffect, useRef, useCallback } from 'react'
@@ -34,11 +34,6 @@ function useSettingsFallback() {
     (changes) => {
       setSettings((prev) => {
         const next = { ...prev, ...changes }
-        if (changes.theme) {
-          if (typeof document !== 'undefined') {
-            document.documentElement.dataset.theme = changes.theme
-          }
-        }
         return next
       })
     },
@@ -78,13 +73,6 @@ export default function SettingsPage() {
       ignore = true
     }
   }, [])
-
-  // Sync theme with document dataset
-  useEffect(() => {
-    if (typeof document !== 'undefined' && settings.theme) {
-      document.documentElement.dataset.theme = settings.theme
-    }
-  }, [settings.theme])
 
   // Trigger transient "Saved ✓" text
   function triggerSavedBadge() {
@@ -217,30 +205,6 @@ export default function SettingsPage() {
           </select>
         </section>
 
-        {/* Theme Toggle */}
-        <section className={styles.section}>
-          <span className={styles.sectionLabel}>Theme</span>
-          <div className={styles.themeToggleRow} role="radiogroup" aria-label="Theme selection">
-            <button
-              type="button"
-              role="radio"
-              aria-checked={settings.theme === 'light'}
-              onClick={() => handleChange('theme', 'light')}
-              className={`${styles.themeBtn} ${settings.theme === 'light' ? styles.activeThemeBtn : ''}`}
-            >
-              ☀️ Light
-            </button>
-            <button
-              type="button"
-              role="radio"
-              aria-checked={settings.theme === 'dark'}
-              onClick={() => handleChange('theme', 'dark')}
-              className={`${styles.themeBtn} ${settings.theme === 'dark' ? styles.activeThemeBtn : ''}`}
-            >
-              🌙 Dark
-            </button>
-          </div>
-        </section>
 
         {/* Action Buttons */}
         <div className={styles.bottomActions}>
