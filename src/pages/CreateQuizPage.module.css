@@ -42,7 +42,7 @@
 }
 
 .required {
-  color: #ef4444;
+  color: var(--danger);
 }
 
 .textInput,
@@ -69,7 +69,7 @@
 }
 
 .inputError {
-  border-color: #ef4444 !important;
+  border-color: var(--danger) !important;
 }
 
 .fieldMeta {
@@ -80,7 +80,7 @@
 }
 
 .errorText {
-  color: #ef4444;
+  color: var(--danger);
   font-weight: 500;
 }
 
