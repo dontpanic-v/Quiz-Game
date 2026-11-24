@@ -11,8 +11,14 @@
  *   export function useQuiz()
  *   -> { questions, currentIndex, currentQuestion, answers, score, total, status,
  *        quizMeta, startQuiz, submitAnswer, nextQuestion, resetQuiz }
- *
- * REQUIREMENTS
- *   1. return useContext(QuizContext)
- *   2. if the value is null, throw Error('useQuiz must be used inside <QuizProvider>')
  */
+import { useContext } from 'react'
+import { QuizContext } from '../context/quizContextObject.js'
+
+export function useQuiz() {
+  const value = useContext(QuizContext)
+  if (value === null) {
+    throw new Error('useQuiz must be used inside <QuizProvider>')
+  }
+  return value
+}
