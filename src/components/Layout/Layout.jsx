@@ -1,5 +1,20 @@
 /**
- * Layout — Standard application shell with sticky Navbar, main content, and footer.
+ * Layout
+ * ──────
+ * FILE    src/components/Layout/Layout.jsx  (+ Layout.module.css)
+ * OWNER   dontpanic (only dontpanic edits this file)
+ *
+ * PURPOSE
+ *   Frame around every page: Navbar on top, the current page below it.
+ *   Used as the parent <Route element={<Layout />}> in App.jsx.
+ *
+ * EXPORT
+ *   export default function Layout()
+ *
+ * BEHAVIOR
+ *   - <main> is centered, max ~720px wide, 16px side padding on phones
+ *   - fills at least the full screen height
+ *   - scrolls to top when the route changes
  */
 import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
@@ -9,9 +24,8 @@ import styles from './Layout.module.css'
 export default function Layout() {
   const { pathname } = useLocation()
 
-  // Scroll to top on route change
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo(0, 0)
   }, [pathname])
 
   return (
@@ -20,9 +34,6 @@ export default function Layout() {
       <main className={styles.main}>
         <Outlet />
       </main>
-      <footer className={styles.footer}>
-        <p>Quiz Game · Final Project · Built by dontpanic, chea, tesroth</p>
-      </footer>
     </div>
   )
 }
