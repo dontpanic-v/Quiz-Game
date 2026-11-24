@@ -1,137 +1,100 @@
 /**
- * Navbar — Top navigation bar with branding, route links, and theme toggle.
+ * Navbar
+ * ──────
+ * FILE    src/components/Layout/Navbar.jsx  (+ Navbar.module.css)
+ * OWNER   dontpanic (only dontpanic edits this file)
+ *
+ * PURPOSE
+ *   Top navigation visible on every page.
+ *
+ * EXPORT
+ *   export default function Navbar()
+ *
+ * BEHAVIOR
+ *   - App name on the left, links to Home, My Quizzes, Leaderboard, Settings
+ *   - Active link is highlighted
+ *   - Under 640px links collapse behind a menu button; menu closes after a click
+ *   - While a quiz is playing, leaving asks for confirmation first
  */
 import { useState } from 'react'
-import { NavLink, Link } from 'react-router-dom'
-import { ROUTES, APP_NAME } from '../../siteConfig.js'
+import { Link, NavLink } from 'react-router-dom'
+import { APP_NAME, ROUTES } from '../../siteConfig.js'
+import { useQuiz } from '../../hooks/useQuiz.js'
 import styles from './Navbar.module.css'
+
+const LINKS = [
+  { to: ROUTES.home, label: 'Home' },
+  { to: ROUTES.myQuizzes, label: 'My Quizzes' },
+  { to: ROUTES.leaderboard, label: 'Leaderboard' },
+  { to: ROUTES.settings, label: 'Settings' },
+]
+
+const LEAVE_MESSAGE = 'Leave the quiz? Your progress will be lost.'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
-  const [theme, setTheme] = useState(() =>
-    typeof document !== 'undefined'
-      ? document.documentElement.dataset.theme || 'light'
-      : 'light'
-  )
+  const { status } = useQuiz()
 
-  function toggleTheme() {
-    const next = theme === 'dark' ? 'light' : 'dark'
-    setTheme(next)
-    if (typeof document !== 'undefined') {
-      document.documentElement.dataset.theme = next
+  // Runs on every link click: stops navigation if the player cancels leaving a quiz.
+  function handleNavigate(event) {
+    if (status === 'playing' && !window.confirm(LEAVE_MESSAGE)) {
+      event.preventDefault()
+      return
     }
+    setIsOpen(false)
   }
 
-  function closeMenu() {
-    setIsOpen(false)
+  function linkClass(base, active) {
+    return ({ isActive }) => (isActive ? `${base} ${active}` : base)
   }
 
   return (
     <header className={styles.navbarWrapper}>
       <nav className={styles.navbar} aria-label="Main">
-        <Link to={ROUTES.home} className={styles.brand} onClick={closeMenu}>
-          <span className={styles.brandIcon}>⚡</span>
-          <span className={styles.brandText}>{APP_NAME}</span>
+        <Link to={ROUTES.home} className={styles.brand} onClick={handleNavigate}>
+          <span>{APP_NAME}</span>
         </Link>
 
-        {/* Desktop Navigation Links */}
         <div className={styles.desktopLinks}>
-          <NavLink
-            to={ROUTES.home}
-            className={({ isActive }) =>
-              `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`
-            }
-          >
-            Home
-          </NavLink>
-          <NavLink
-            to={ROUTES.myQuizzes}
-            className={({ isActive }) =>
-              `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`
-            }
-          >
-            My Quizzes
-          </NavLink>
-          <NavLink
-            to={ROUTES.leaderboard}
-            className={({ isActive }) =>
-              `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`
-            }
-          >
-            Leaderboard
-          </NavLink>
-          <NavLink
-            to={ROUTES.settings}
-            className={({ isActive }) =>
-              `${styles.navLink} ${isActive ? styles.activeNavLink : ''}`
-            }
-          >
-            Settings
-          </NavLink>
+          {LINKS.map(({ to, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={to === ROUTES.home}
+              onClick={handleNavigate}
+              className={linkClass(styles.navLink, styles.activeNavLink)}
+            >
+              {label}
+            </NavLink>
+          ))}
         </div>
 
         <div className={styles.actions}>
           <button
             type="button"
-            onClick={toggleTheme}
-            className={styles.themeToggleBtn}
-            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-          >
-            {theme === 'dark' ? '☀️' : '🌙'}
-          </button>
-
-          {/* Mobile hamburger button */}
-          <button
-            type="button"
             onClick={() => setIsOpen((prev) => !prev)}
-            className={styles.menuBtn}
-            aria-label="Toggle navigation menu"
+            className={`${styles.iconBtn} ${styles.menuBtn}`}
             aria-expanded={isOpen}
+            aria-controls="mobile-menu"
           >
-            {isOpen ? '✕' : '☰'}
+            {isOpen ? 'Close' : 'Menu'}
           </button>
         </div>
       </nav>
 
-      {/* Mobile Drawer */}
       {isOpen && (
-        <div className={styles.mobileMenu}>
-          <NavLink
-            to={ROUTES.home}
-            onClick={closeMenu}
-            className={({ isActive }) =>
-              `${styles.mobileNavLink} ${isActive ? styles.activeMobileNavLink : ''}`
-            }
-          >
-            Home
-          </NavLink>
-          <NavLink
-            to={ROUTES.myQuizzes}
-            onClick={closeMenu}
-            className={({ isActive }) =>
-              `${styles.mobileNavLink} ${isActive ? styles.activeMobileNavLink : ''}`
-            }
-          >
-            My Quizzes
-          </NavLink>
-          <NavLink
-            to={ROUTES.leaderboard}
-            onClick={closeMenu}
-            className={({ isActive }) =>
-              `${styles.mobileNavLink} ${isActive ? styles.activeMobileNavLink : ''}`
-            }
-          >
-            Leaderboard
-          </NavLink>
-          <NavLink
-            to={ROUTES.settings}
-            onClick={closeMenu}
-            className={({ isActive }) =>
-              `${styles.mobileNavLink} ${isActive ? styles.activeMobileNavLink : ''}`
-            }
-          >
-            Settings
-          </NavLink>
+        <div id="mobile-menu" className={styles.mobileMenu}>
+          {LINKS.map(({ to, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={to === ROUTES.home}
+              onClick={handleNavigate}
+              className={linkClass(styles.mobileNavLink, styles.activeNavLink)}
+            >
+              {label}
+            </NavLink>
+          ))}
         </div>
       )}
     </header>
