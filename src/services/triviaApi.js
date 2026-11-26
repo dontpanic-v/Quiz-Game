@@ -1,46 +1,98 @@
-/**
- * triviaApi
- * ─────────
- * FILE    src/services/triviaApi.js
- * OWNER   chea (only chea edits this file)
- *
- * PURPOSE
- *   Load questions from Open Trivia DB and convert them to our Question shape.
- *   API docs: https://opentdb.com/api_config.php  (free, no key)
- *
- * EXPORT
- *   export async function fetchQuestions({ amount, difficulty, category }) -> Question[]
- *   export async function fetchCategories() -> { id: number, name: string }[]
- *
- *   Question = {
- *     id: string,               crypto.randomUUID()
- *     question: string,         decoded plain text
- *     answers: string[],        correct + incorrect, decoded, shuffled
- *     correctAnswer: string,    decoded
- *     difficulty: 'easy' | 'medium' | 'hard',
- *     category: string,         decoded
- *   }
- *
- * USES
- *   decodeHtml(text) from '../utils/decodeHtml.js'
- *   shuffle(array)   from '../utils/shuffle.js'
- *
- * API DETAILS
- *   Questions:  https://opentdb.com/api.php?amount=10&difficulty=easy&type=multiple
- *               add &category=<id> only when category is not ''
- *   Categories: https://opentdb.com/api_category.php -> { trivia_categories: [{ id, name }] }
- *   Response:   { response_code, results: [{ category, difficulty, question,
- *                 correct_answer, incorrect_answers: string[] }] }
- *   response_code: 0 ok, 1 not enough questions, 2 invalid parameter, 5 rate limited
- *   Rate limit: 1 request per 5 seconds per IP.
- *
- * REQUIREMENTS
- *   1. Build the URL with URLSearchParams
- *   2. Throw a readable Error (shown to the player) when:
- *      network fails / !response.ok -> "Could not reach the quiz server. Check your connection."
- *      code 1 -> "Not enough questions for these settings. Try fewer questions or another category."
- *      code 5 -> "Too many requests. Please wait a few seconds and try again."
- *      other non-zero -> "Something went wrong loading questions."
- *   3. Map every result to Question as above
- *   4. No React in this file
- */
+
+
+import { decodeHtml } from '../utils/decodeHtml.js';
+import { shuffle } from '../utils/shuffle.js';
+
+export async function fetchQuestions({ amount, difficulty, category }) {
+    const params = new URLSearchParams({
+        amount: amount,
+        difficulty: difficulty,
+        type: 'multiple'
+    });
+
+    if (category !== '') {
+        params.set('category', category);
+    }
+
+    const url = `https://opentdb.com/api.php?${params.toString()}`;
+
+    let response;
+
+    try {
+        response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error();
+        }
+    } catch {
+        throw new Error(
+            'Could not reach the quiz server. Check your connection.'
+        );
+    }
+
+    const data = await response.json();
+
+    if (data.response_code === 1) {
+        throw new Error(
+            'Not enough questions for these settings. Try fewer questions or another category.'
+        );
+    }
+
+    if (data.response_code === 5) {
+        throw new Error(
+            'Too many requests. Please wait a few seconds and try again.'
+        );
+    }
+
+    if (data.response_code !== 0) {
+        throw new Error(
+            'Something went wrong loading questions.'
+        );
+    }
+
+    return data.results.map((item) => {
+        const correctAnswer = decodeHtml(item.correct_answer);
+
+        const incorrectAnswers = item.incorrect_answers.map(decodeHtml);
+
+        const answers = shuffle([
+            correctAnswer,
+            ...incorrectAnswers
+        ]);
+
+        return {
+            id: crypto.randomUUID(),
+            question: decodeHtml(item.question),
+            answers: answers,
+            correctAnswer: correctAnswer,
+            difficulty: item.difficulty,
+            category: decodeHtml(item.category)
+        };
+    });
+}
+
+export async function fetchCategories() {
+    let response;
+
+    try {
+        response = await fetch(
+            'https://opentdb.com/api_category.php'
+        );
+
+        if (!response.ok) {
+            throw new Error();
+        }
+    } catch {
+        throw new Error(
+            'Could not reach the quiz server. Check your connection.'
+        );
+    }
+
+    const data = await response.json();
+
+    return data.trivia_categories.map((category) => ({
+        id: category.id,
+        name: decodeHtml(category.name)
+    }));
+}
+
