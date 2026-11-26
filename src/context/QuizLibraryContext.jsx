@@ -1,47 +1,128 @@
 /**
- * QuizLibraryContext
- * ──────────────────
- * FILE    src/context/QuizLibraryContext.jsx
- * OWNER   tesroth (only tesroth edits this file)
- *         dontpanic adds <QuizLibraryProvider> in src/main.jsx
- *
- * PURPOSE
- *   Global, persistent list of quizzes the players write themselves (like Quizlet sets).
- *
- * EXPORT
- *   export function QuizLibraryProvider({ children })
- *   Context object in a separate file (e.g. src/context/quizLibraryContextObject.js)
- *   so this file only exports components (ESLint react-refresh rule).
- *
- * USES
- *   useLocalStorage(STORAGE_KEYS.quizzes, []) from '../hooks/useLocalStorage.js'
- *   STORAGE_KEYS from '../siteConfig.js'
- *
- * CONTEXT VALUE (read by others through useQuizLibrary())
- *   quizzes     QuizSet[]                  newest first
- *   getQuiz     (id) => QuizSet | undefined
- *   createQuiz  ({ title, description, difficulty, questions }) => string   returns new id
- *   updateQuiz  (id, changes) => void      also sets updatedAt
- *   deleteQuiz  (id) => void
- *
- *   QuizSet = {
- *     id, title, description,
- *     difficulty: 'easy' | 'medium' | 'hard',
- *     questions: CustomQuestion[],
- *     createdAt, updatedAt               ISO strings
- *   }
- *   CustomQuestion = {
- *     id, question,
- *     answers: string[],                 2–4 options in the order the author typed
- *     correctAnswer: string,             equals one of answers
- *   }
- *
- * REQUIREMENTS
- *   1. ids with crypto.randomUUID(), dates with new Date().toISOString()
- *   2. actions in useCallback with functional setState, value in useMemo
- *   3. On first visit (nothing saved yet) start with 1 sample quiz
- *      (e.g. "Web Dev Basics", 3–5 questions) so My Quizzes isn't empty
- *
- * DONE WHEN
- *   - create, edit, delete a quiz, refresh, and the changes are still there
+ * QuizLibraryContext — Global, persistent list of custom quizzes.
+ * EXPORT: export function QuizLibraryProvider({ children })
  */
+import { useMemo, useCallback } from 'react'
+import { QuizLibraryContext } from './quizLibraryContextObject.js'
+import { useLocalStorage } from '../hooks/useLocalStorage.js'
+import { STORAGE_KEYS } from '../siteConfig.js'
+
+const SAMPLE_QUIZZES = [
+  {
+    id: 'sample-web-dev-basics',
+    title: 'Web Dev Basics',
+    description: 'Test your knowledge of HTML, CSS, JavaScript, and DOM fundamentals.',
+    difficulty: 'easy',
+    questions: [
+      {
+        id: 'q1-link-tag',
+        question: 'Which HTML element is used to link an external CSS stylesheet?',
+        answers: ['<link>', '<style>', '<css>', '<stylesheet>'],
+        correctAnswer: '<link>',
+      },
+      {
+        id: 'q2-flexbox',
+        question: 'Which CSS property enables a flexbox layout container?',
+        answers: ['display: flex', 'layout: flex', 'float: center', 'position: relative'],
+        correctAnswer: 'display: flex',
+      },
+      {
+        id: 'q3-const',
+        question: 'Which JavaScript keyword declares a block-scoped constant variable?',
+        answers: ['const', 'let', 'var', 'def'],
+        correctAnswer: 'const',
+      },
+      {
+        id: 'q4-dom',
+        question: 'What does the abbreviation DOM stand for in frontend development?',
+        answers: ['Document Object Model', 'Data Operations Module', 'Desktop Orientation Mode', 'Digital Output Matrix'],
+        correctAnswer: 'Document Object Model',
+      },
+    ],
+    createdAt: new Date('2026-01-01T00:00:00.000Z').toISOString(),
+    updatedAt: new Date('2026-01-01T00:00:00.000Z').toISOString(),
+  },
+]
+
+export function QuizLibraryProvider({ children }) {
+  const [quizzes, setQuizzes] = useLocalStorage(STORAGE_KEYS.quizzes, SAMPLE_QUIZZES)
+
+  const getQuiz = useCallback(
+    (id) => quizzes.find((q) => q.id === id),
+    [quizzes]
+  )
+
+  const createQuiz = useCallback(
+    ({ title, description = '', difficulty = 'easy', questions = [] }) => {
+      const newId = crypto.randomUUID()
+      const now = new Date().toISOString()
+      const formattedQuestions = questions.map((q) => ({
+        id: q.id || crypto.randomUUID(),
+        question: q.question,
+        answers: q.answers,
+        correctAnswer: q.correctAnswer,
+      }))
+
+      const newQuiz = {
+        id: newId,
+        title,
+        description,
+        difficulty,
+        questions: formattedQuestions,
+        createdAt: now,
+        updatedAt: now,
+      }
+
+      setQuizzes((prev) => [newQuiz, ...(Array.isArray(prev) ? prev : [])])
+      return newId
+    },
+    [setQuizzes]
+  )
+
+  const updateQuiz = useCallback(
+    (id, changes) => {
+      const now = new Date().toISOString()
+      setQuizzes((prev) => {
+        if (!Array.isArray(prev)) return []
+        return prev.map((quiz) => {
+          if (quiz.id === id) {
+            return {
+              ...quiz,
+              ...changes,
+              updatedAt: now,
+            }
+          }
+          return quiz
+        })
+      })
+    },
+    [setQuizzes]
+  )
+
+  const deleteQuiz = useCallback(
+    (id) => {
+      setQuizzes((prev) => {
+        if (!Array.isArray(prev)) return []
+        return prev.filter((quiz) => quiz.id !== id)
+      })
+    },
+    [setQuizzes]
+  )
+
+  const value = useMemo(
+    () => ({
+      quizzes: Array.isArray(quizzes) ? quizzes : [],
+      getQuiz,
+      createQuiz,
+      updateQuiz,
+      deleteQuiz,
+    }),
+    [quizzes, getQuiz, createQuiz, updateQuiz, deleteQuiz]
+  )
+
+  return (
+    <QuizLibraryContext.Provider value={value}>
+      {children}
+    </QuizLibraryContext.Provider>
+  )
+}
