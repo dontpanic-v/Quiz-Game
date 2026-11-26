@@ -17,7 +17,6 @@ export const DEFAULT_SETTINGS = {
   difficulty: 'easy', // one of DIFFICULTIES
   amount: 10, // one of QUESTION_AMOUNTS
   category: '', // '' = any category (Open Trivia DB category id otherwise)
-  theme: 'light', // 'light' | 'dark'
 }
 
 // Keys used in localStorage. Prefix avoids clashing with other apps on localhost.

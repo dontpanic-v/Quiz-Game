@@ -1,0 +1,130 @@
+.container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  box-sizing: border-box;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.clearBtn {
+  min-height: 44px;
+  padding: 8px 16px;
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  white-space: nowrap;
+}
+
+.clearBtn:hover {
+  background: var(--danger-bg);
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+  overflow-x: auto;
+}
+
+.tab {
+  min-height: 44px;
+  padding: 8px 18px;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tab:hover {
+  background: var(--border);
+}
+
+.activeTab {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.summaryBar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+
+.summaryItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.summaryLabel {
+  font-size: 12px;
+  color: var(--text);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.summaryValue {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+@media (max-width: 540px) {
+  .titleRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .clearBtn {
+    align-self: flex-start;
+  }
+  .summaryBar {
+    gap: 12px;
+  }
+  .summaryValue {
+    font-size: 20px;
+  }
+}

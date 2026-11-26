@@ -1,0 +1,209 @@
+.container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  box-sizing: border-box;
+}
+
+.header {
+  margin-bottom: 28px;
+}
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.headerActions {
+  display: flex;
+  gap: 10px;
+}
+
+.createBtn {
+  min-height: 48px;
+  padding: 10px 20px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+}
+
+.createBtn:hover {
+  opacity: 0.92;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.searchWrapper {
+  flex: 1;
+  min-width: 240px;
+}
+
+.searchInput {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--text-h);
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.searchInput:focus {
+  outline: 2px solid var(--accent);
+  border-color: transparent;
+}
+
+.backupActions {
+  display: flex;
+  gap: 8px;
+}
+
+.toolBtn {
+  min-height: 44px;
+  padding: 8px 14px;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-h);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.toolBtn:hover:not(:disabled) {
+  background: var(--border);
+}
+
+.toolBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.hiddenFileInput {
+  display: none;
+}
+
+/* One full-width card per row */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 600px) {
+  .titleRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .createBtn {
+    width: 100%;
+  }
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .backupActions {
+    justify-content: stretch;
+  }
+  .toolBtn {
+    flex: 1;
+  }
+}
+
+.emptyState {
+  padding: 60px 16px;
+  text-align: center;
+  background: var(--bg);
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.emptyTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0 0 8px;
+}
+
+.emptyDesc {
+  font-size: 14px;
+  color: var(--text);
+  margin: 0 0 20px;
+}
+
+.emptyActionBtn {
+  min-height: 48px;
+  padding: 10px 24px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.emptyActionBtn:hover {
+  opacity: 0.92;
+}
+
+.clearSearchBtn {
+  min-height: 44px;
+  padding: 8px 18px;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-h);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

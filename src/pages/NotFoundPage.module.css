@@ -1,0 +1,26 @@
+/* OWNER dontpanic — styles for NotFoundPage.jsx */
+
+.page {
+  text-align: center;
+  padding: 48px 0;
+}
+
+.code {
+  margin: 0;
+  font-size: 72px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.title {
+  margin: 12px 0;
+  font-size: 32px;
+}
+
+.message {
+  margin: 0 auto 24px;
+  max-width: 420px;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}

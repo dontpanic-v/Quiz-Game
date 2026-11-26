@@ -10,7 +10,7 @@
  *
  * EXPORT
  *   export function QuizProvider({ children })
- *   Context object in a separate file (ESLint react-refresh rule).
+ *   The context object lives in ./quizContextObject.js (ESLint react-refresh rule).
  *
  * CONTEXT VALUE (read by others through useQuiz())
  *   questions        Question[]
@@ -23,6 +23,7 @@
  *   quizMeta         { title: string, setId: string | null }
  *   startQuiz        (questions, meta) => void   resets everything, status 'playing'
  *   submitAnswer     (selected: string | null) => boolean
+ *                      Returns whether the answer was correct.
  *                      null means time ran out (counts as wrong).
  *                      Ignored (returns false) if the current question was already answered.
  *   nextQuestion     () => void   index + 1, or status 'finished' after the last question
@@ -30,13 +31,93 @@
  *
  *   Question     = { id, question, answers: string[], correctAnswer, difficulty, category }
  *   AnswerRecord = { questionId, selected: string | null, isCorrect: boolean }
- *
- * REQUIREMENTS
- *   1. useState for questions, currentIndex, answers, status, quizMeta
- *   2. score / total / currentQuestion are calculated, never stored in state
- *   3. actions wrapped in useCallback, value wrapped in useMemo
- *
- * DONE WHEN
- *   - QuizPage can start a quiz, answer, go next, and reach 'finished'
- *   - ResultsPage can read score, total, answers, questions, quizMeta
  */
+import { useCallback, useMemo, useState } from 'react'
+import { QuizContext } from './quizContextObject.js'
+
+const EMPTY_META = { title: '', setId: null }
+
+export function QuizProvider({ children }) {
+  const [questions, setQuestions] = useState([])
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [answers, setAnswers] = useState([])
+  const [status, setStatus] = useState('idle')
+  const [quizMeta, setQuizMeta] = useState(EMPTY_META)
+
+  // Derived values: calculated on every render, never stored in state.
+  const currentQuestion = questions[currentIndex] ?? null
+  const score = answers.filter((a) => a.isCorrect).length
+  const total = questions.length
+
+  const startQuiz = useCallback((newQuestions, meta = {}) => {
+    setQuestions(newQuestions)
+    setCurrentIndex(0)
+    setAnswers([])
+    setQuizMeta({ ...EMPTY_META, ...meta })
+    setStatus('playing')
+  }, [])
+
+  const submitAnswer = useCallback(
+    (selected) => {
+      if (status !== 'playing' || !currentQuestion) return false
+      if (answers.some((a) => a.questionId === currentQuestion.id)) return false
+
+      const isCorrect = selected !== null && selected === currentQuestion.correctAnswer
+      setAnswers((prev) => [
+        ...prev,
+        { questionId: currentQuestion.id, selected, isCorrect },
+      ])
+      return isCorrect
+    },
+    [status, currentQuestion, answers],
+  )
+
+  const nextQuestion = useCallback(() => {
+    if (currentIndex + 1 >= questions.length) {
+      setStatus('finished')
+    } else {
+      setCurrentIndex(currentIndex + 1)
+    }
+  }, [currentIndex, questions.length])
+
+  const resetQuiz = useCallback(() => {
+    setQuestions([])
+    setCurrentIndex(0)
+    setAnswers([])
+    setQuizMeta(EMPTY_META)
+    setStatus('idle')
+  }, [])
+
+  const value = useMemo(
+    () => ({
+      questions,
+      currentIndex,
+      currentQuestion,
+      answers,
+      score,
+      total,
+      status,
+      quizMeta,
+      startQuiz,
+      submitAnswer,
+      nextQuestion,
+      resetQuiz,
+    }),
+    [
+      questions,
+      currentIndex,
+      currentQuestion,
+      answers,
+      score,
+      total,
+      status,
+      quizMeta,
+      startQuiz,
+      submitAnswer,
+      nextQuestion,
+      resetQuiz,
+    ],
+  )
+
+  return <QuizContext.Provider value={value}>{children}</QuizContext.Provider>
+}

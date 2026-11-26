@@ -14,7 +14,7 @@ your browser.
 - Score, progress bar and a results page with a review of every answer
 - Leaderboard of past games, filterable by difficulty
 - **Create your own quizzes** and play them like any other quiz
-- Light / dark theme, works on phones
+- Clean black, white and navy design that works on phones
 - Settings, scores and custom quizzes saved with `localStorage`
 
 ## Getting started
@@ -54,7 +54,7 @@ Quiz-Game/
 └── src/
     ├── main.jsx                        [dontpanic] app entry: router + providers
     ├── App.jsx                         [dontpanic] list of all routes/pages
-    ├── index.css                       [dontpanic] global styles, colors, dark mode
+    ├── index.css                       [dontpanic] global styles and colors
     ├── siteConfig.js                   [dontpanic] shared constants (routes, difficulties, keys)
     │
     ├── pages/                          one file = one page (route)
@@ -111,7 +111,7 @@ Component styles go in a `Name.module.css` file next to the component
 | --- | --- |
 | `src/main.jsx` | App entry, wraps everything in router + providers |
 | `src/App.jsx` | All routes |
-| `src/index.css` | Global styles, color variables, dark mode |
+| `src/index.css` | Global styles and color variables |
 | `src/siteConfig.js` | Shared constants everyone imports |
 | `src/context/SettingsContext.jsx` | Settings + game history (saved) |
 | `src/context/QuizContext.jsx` | Current game state |
@@ -138,7 +138,7 @@ Component styles go in a `Name.module.css` file next to the component
 | File | What it does |
 | --- | --- |
 | `src/pages/HomePage.jsx` | Landing page, start button |
-| `src/pages/SettingsPage.jsx` | Difficulty, amount, category, theme |
+| `src/pages/SettingsPage.jsx` | Difficulty, amount, category |
 | `src/pages/LeaderboardPage.jsx` | Ranking of past games |
 | `src/pages/MyQuizzesPage.jsx` | Library of custom quizzes |
 | `src/pages/CreateQuizPage.jsx` | Create / edit a custom quiz |

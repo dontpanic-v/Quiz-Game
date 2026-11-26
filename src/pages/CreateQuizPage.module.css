@@ -1,0 +1,252 @@
+.container {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  box-sizing: border-box;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.required {
+  color: var(--danger);
+}
+
+.textInput,
+.textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--text-h);
+  font-size: 15px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.textInput {
+  min-height: 48px;
+}
+
+.textInput:focus,
+.textarea:focus {
+  outline: 2px solid var(--accent);
+  border-color: transparent;
+}
+
+.inputError {
+  border-color: var(--danger) !important;
+}
+
+.fieldMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.errorText {
+  color: var(--danger);
+  font-weight: 500;
+}
+
+.charCount {
+  color: var(--text);
+  margin-left: auto;
+}
+
+.difficultyGroup {
+  display: flex;
+  gap: 10px;
+}
+
+.diffBtn {
+  flex: 1;
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.activeDiffBtn {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.questionsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.questionsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sectionHeading {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.addQuestionBtn,
+.bottomAddQuestionBtn {
+  min-height: 44px;
+  padding: 8px 18px;
+  background: var(--code-bg);
+  border: 1px dashed var(--accent);
+  border-radius: 8px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.bottomAddQuestionBtn {
+  width: 100%;
+}
+
+.addQuestionBtn:hover,
+.bottomAddQuestionBtn:hover {
+  background: var(--accent-bg);
+}
+
+.questionList {
+  display: flex;
+  flex-direction: column;
+}
+
+.footerActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.cancelBtn {
+  min-height: 48px;
+  padding: 10px 24px;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.cancelBtn:hover {
+  background: var(--code-bg);
+  color: var(--text-h);
+}
+
+.saveBtn {
+  min-height: 48px;
+  padding: 10px 32px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: opacity 0.2s ease;
+}
+
+.saveBtn:hover {
+  opacity: 0.92;
+}
+
+.notFoundContainer {
+  text-align: center;
+  padding: 60px 16px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.notFoundContainer h2 {
+  font-size: 28px;
+  color: var(--text-h);
+  margin-bottom: 12px;
+}
+
+.notFoundContainer p {
+  color: var(--text);
+  margin-bottom: 24px;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 20px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .questionsHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .footerActions {
+    flex-direction: column-reverse;
+  }
+  .cancelBtn,
+  .saveBtn {
+    width: 100%;
+  }
+}

@@ -1,25 +1,63 @@
 /**
- * QuizSetCard
- * ───────────
- * FILE    src/components/QuizBuilder/QuizSetCard.jsx  (+ QuizSetCard.module.css)
- * OWNER   tesroth (only tesroth edits this file)
- *
- * PURPOSE
- *   One quiz in the My Quizzes grid. Presentational only: no context.
- *
- * EXPORT
- *   export default function QuizSetCard({ quiz, onPlay, onEdit, onDelete })
- *
- * PROPS
- *   quiz      { id, title, description, difficulty, questions: [], createdAt, updatedAt }
- *   onPlay    () => void
- *   onEdit    () => void
- *   onDelete  () => void
- *
- * REQUIREMENTS
- *   1. <article> with title (h3), description cut to 2 lines (CSS line-clamp)
- *   2. Meta row: "12 questions" (singular "1 question"), difficulty tag,
- *      "Updated <toLocaleDateString()>"
- *   3. Buttons: Play (primary), Edit, Delete (danger style)
- *   4. Delete and Edit buttons have aria-label including the quiz title
+ * QuizSetCard — Card displaying a custom quiz in the My Quizzes library.
+ * PROPS: { quiz, onPlay, onEdit, onDelete }
  */
+import styles from './QuizSetCard.module.css'
+
+export default function QuizSetCard({ quiz, onPlay, onEdit, onDelete }) {
+  const count = quiz.questions?.length || 0
+  const questionLabel = count === 1 ? '1 question' : `${count} questions`
+  const diff = (quiz.difficulty || 'easy').toLowerCase()
+  const updatedDate = quiz.updatedAt ? new Date(quiz.updatedAt).toLocaleDateString() : ''
+
+  return (
+    <article className={styles.card}>
+      <div className={styles.content}>
+        <div className={styles.header}>
+          <h3 className={styles.title}>{quiz.title}</h3>
+          <span className={`${styles.badge} ${styles[diff] || styles.easy}`}>
+            {diff.charAt(0).toUpperCase() + diff.slice(1)}
+          </span>
+        </div>
+
+        {quiz.description && (
+          <p className={styles.description}>{quiz.description}</p>
+        )}
+
+        <div className={styles.meta}>
+          <span className={styles.count}>{questionLabel}</span>
+          {updatedDate && (
+            <span className={styles.date}>Updated {updatedDate}</span>
+          )}
+        </div>
+      </div>
+
+      <div className={styles.actions}>
+        <button
+          type="button"
+          onClick={onPlay}
+          className={styles.playBtn}
+          aria-label={`Play ${quiz.title}`}
+        >
+          Play
+        </button>
+        <button
+          type="button"
+          onClick={onEdit}
+          className={styles.editBtn}
+          aria-label={`Edit ${quiz.title}`}
+        >
+          Edit
+        </button>
+        <button
+          type="button"
+          onClick={onDelete}
+          className={styles.deleteBtn}
+          aria-label={`Delete ${quiz.title}`}
+        >
+          Delete
+        </button>
+      </div>
+    </article>
+  )
+}
