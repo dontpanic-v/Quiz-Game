@@ -1,24 +1,28 @@
 /**
- * Layout
- * ──────
- * FILE    src/components/Layout/Layout.jsx  (+ Layout.module.css)
- * OWNER   dontpanic (only dontpanic edits this file)
- *
- * PURPOSE
- *   Frame around every page: Navbar on top, the current page in the middle, footer below.
- *   Used as the parent <Route element={<Layout />}> in App.jsx.
- *
- * EXPORT
- *   export default function Layout()
- *
- * USES
- *   <Outlet /> from 'react-router-dom'
- *   <Navbar /> from './Navbar.jsx'
- *
- * REQUIREMENTS
- *   1. <Navbar />, then <main> containing <Outlet />, then a small <footer>
- *      (app name + team names: dontpanic, chea, tesroth)
- *   2. <main> is centered with a max width (~720px) and side padding of 16px on phones
- *   3. page fills at least the full screen height so the footer stays at the bottom
- *   4. scroll to top when the route changes (useEffect on useLocation().pathname)
+ * Layout — Standard application shell with sticky Navbar, main content, and footer.
  */
+import { useEffect } from 'react'
+import { Outlet, useLocation } from 'react-router-dom'
+import Navbar from './Navbar.jsx'
+import styles from './Layout.module.css'
+
+export default function Layout() {
+  const { pathname } = useLocation()
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [pathname])
+
+  return (
+    <div className={styles.layout}>
+      <Navbar />
+      <main className={styles.main}>
+        <Outlet />
+      </main>
+      <footer className={styles.footer}>
+        <p>Quiz Game · Final Project · Built by dontpanic, chea, tesroth</p>
+      </footer>
+    </div>
+  )
+}
