@@ -1,13 +1,11 @@
-/**
- * shuffle
- * ───────
- * FILE    src/utils/shuffle.js
- * OWNER   chea (only chea edits this file)
- *
- * EXPORT
- *   export function shuffle(items) -> new array
- *
- * REQUIREMENTS
- *   1. Fisher–Yates shuffle on a COPY: never mutate the input array
- *   2. Pure function, no React
- */
+export function shuffle(items) {
+  const shuffled = [...items];
+
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  return shuffled;
+}
