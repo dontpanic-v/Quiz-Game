@@ -1,62 +1,263 @@
-/**
- * QuizPage
- * ────────
- * FILE    src/pages/QuizPage.jsx  (+ QuizPage.module.css)
- * OWNER   chea (only chea edits this file)
- * ROUTE   /quiz              -> questions from Open Trivia DB
- *         /quiz?set=<id>     -> questions from a custom quiz the player made
- *
- * PURPOSE
- *   The game screen: load questions, show one at a time, player picks an answer,
- *   instant feedback, next question, and at the end go to the results page.
- *
- * EXPORT
- *   export default function QuizPage()
- *
- * USES
- *   useSettings()     -> { settings: { difficulty, amount, category } }
- *   useQuiz()         -> { currentQuestion, currentIndex, total, score, status,
- *                          startQuiz, submitAnswer, nextQuestion }
- *   useQuizLibrary()  -> { getQuiz(id) }   (tesroth; custom quizzes)
- *   fetchQuestions({ amount, difficulty, category }) from '../services/triviaApi.js'
- *   shuffle(array) from '../utils/shuffle.js'
- *   useTimer(seconds, onTimeUp) from '../hooks/useTimer.js'
- *   <ProgressBar />, <QuestionCard /> from '../components/Quiz/'
- *   useSearchParams, useNavigate from 'react-router-dom';  ROUTES from '../siteConfig.js'
- *
- *   Question = { id, question, answers: string[], correctAnswer, difficulty, category }
- *   startQuiz(questions, { title, setId })
- *     API quiz:    title 'Open Trivia', setId null
- *     custom quiz: title = quiz.title,  setId = quiz.id
- *
- * REQUIREMENTS
- *   1. Loading (useEffect when the page opens):
- *      - no ?set   -> await fetchQuestions(settings) -> startQuiz(questions, ...)
- *      - ?set=<id> -> quiz = getQuiz(id); convert each CustomQuestion
- *        { id, question, answers, correctAnswer } into a Question:
- *        answers shuffled, difficulty = quiz.difficulty, category = quiz.title.
- *        Unknown id -> message "Quiz not found" + link to ROUTES.myQuizzes
- *      - use an `ignore` flag in the effect cleanup so StrictMode's double run
- *        does not start two quizzes / hit the API rate limit twice
- *   2. Three UI states: loading (spinner or skeleton), error (message + "Try again"
- *      button that reloads), playing
- *   3. useState `selected` (string | null) for the current question:
- *      - click an answer -> setSelected(answer); submitAnswer(answer)
- *      - QuestionCard shows feedback (green correct / red wrong) and locks answers
- *      - a "Next" button appears (label "See results" on the last question)
- *      - Next -> nextQuestion(); setSelected(null); reset timer
- *   4. Timer: useTimer(secondsFor(difficulty), onTimeUp)
- *      easy 20s, medium 15s, hard 10s. Time up -> submitAnswer(null), show the
- *      correct answer, same "Next" button. Timer stops once an answer is chosen.
- *   5. useEffect: when status becomes 'finished' -> navigate(ROUTES.results)
- *   6. Layout: ProgressBar on top, QuestionCard below, Next button full width on mobile
- *
- * RULES
- *   - Do not store score in this page; it comes from useQuiz()
- *   - Keyboard: answers are buttons; Enter on "Next" works
- *
- * DONE WHEN
- *   - a full 10-question quiz can be played on all 3 difficulties and a custom quiz
- *   - feedback shows for every answer and for time up
- *   - API error shows a message instead of a blank page
- */
+
+import { useState, useEffect, useRef } from "react";
+import { useSearchParams, useNavigate, Link } from "react-router-dom";
+
+import { useSettings } from "../hooks/useSettings.js";
+import { useQuiz } from "../hooks/useQuiz.js";
+import { useQuizLibrary } from "../hooks/useQuizLibrary.js";
+import { useTimer } from "../hooks/useTimer.js";
+
+import { fetchQuestions } from "../services/triviaApi.js";
+import { shuffle } from "../utils/shuffle.js";
+
+import ProgressBar from "../components/Quiz/ProgressBar.jsx";
+import QuestionCard from "../components/Quiz/QuestionCard.jsx";
+
+import { ROUTES } from "../siteConfig.js";
+import styles from "./QuizPage.module.css";
+
+function secondsFor(difficulty) {
+  switch (difficulty) {
+    case "easy":
+      return 20;
+    case "medium":
+      return 15;
+    case "hard":
+      return 10;
+    default:
+      return 20;
+  }
+}
+
+export default function QuizPage() {
+  const { settings } = useSettings();
+
+  const {
+    currentQuestion,
+    currentIndex,
+    total,
+    score,
+    status,
+    startQuiz,
+    submitAnswer,
+    nextQuestion,
+  } = useQuiz();
+
+  const { getQuiz } = useQuizLibrary();
+
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const setId = searchParams.get("set");
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [notFound, setNotFound] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const [revealed, setRevealed] = useState(false);
+
+  const answeredRef = useRef(false);
+
+  const difficulty = currentQuestion?.difficulty || settings.difficulty;
+
+  const { secondsLeft, stop, reset } = useTimer(
+    secondsFor(difficulty),
+    handleTimeUp,
+  );
+
+  function handleTimeUp() {
+    if (
+      loading ||
+      error ||
+      !currentQuestion ||
+      answeredRef.current ||
+      status === "finished"
+    ) {
+      return;
+    }
+
+    answeredRef.current = true;
+    setSelected(null);
+    setRevealed(true);
+    submitAnswer(null);
+  }
+
+  useEffect(() => {
+    let ignore = false;
+
+    // Delay loading so StrictMode can cancel its first effect.
+    const timeout = setTimeout(async () => {
+      setLoading(true);
+      setError("");
+      setNotFound(false);
+
+      try {
+        let questions;
+        let metadata;
+
+        if (setId !== null) {
+          const quiz = getQuiz(setId);
+
+          if (!quiz) {
+            if (!ignore) {
+              setNotFound(true);
+              setError("Quiz not found");
+            }
+            return;
+          }
+
+          questions = quiz.questions.map((item) => ({
+            id: item.id,
+            question: item.question,
+            answers: shuffle(item.answers),
+            correctAnswer: item.correctAnswer,
+            difficulty: quiz.difficulty,
+            category: quiz.title,
+          }));
+
+          metadata = {
+            title: quiz.title,
+            setId: quiz.id,
+          };
+        } else {
+          questions = await fetchQuestions(settings);
+
+          metadata = {
+            title: "Open Trivia",
+            setId: null,
+          };
+        }
+
+        if (ignore) return;
+
+        if (questions.length === 0) {
+          throw new Error("This quiz has no questions.");
+        }
+
+        answeredRef.current = false;
+        setSelected(null);
+        setRevealed(false);
+
+        startQuiz(questions, metadata);
+      } catch (err) {
+        if (!ignore) {
+          setError(err.message || "Something went wrong loading questions.");
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    }, 0);
+
+    return () => {
+      ignore = true;
+      clearTimeout(timeout);
+    };
+  }, [setId, getQuiz, settings, startQuiz]);
+
+  // Start a fresh timer when a question becomes active.
+  useEffect(() => {
+    if (!loading && !error && currentQuestion) {
+      reset();
+    } else {
+      stop();
+    }
+  }, [loading, error, currentQuestion, reset, stop]);
+
+  useEffect(() => {
+    if (!loading && !error && status === "finished") {
+      navigate(ROUTES.results);
+    }
+  }, [status, loading, error, navigate]);
+
+  function handleSelect(answer) {
+    if (answeredRef.current) return;
+
+    answeredRef.current = true;
+
+    setSelected(answer);
+    setRevealed(true);
+
+    stop();
+    submitAnswer(answer);
+  }
+
+  function handleNext() {
+    if (!revealed) return;
+
+    answeredRef.current = false;
+
+    setSelected(null);
+    setRevealed(false);
+
+    reset();
+    nextQuestion();
+  }
+
+  if (loading) {
+    return (
+      <div className={styles.loading} role="status">
+        <div className={styles.spinner} />
+        <p>Loading questions...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.error} role="alert">
+        <h2>{notFound ? "Quiz not found" : "Unable to load quiz"}</h2>
+
+        {!notFound && <p>{error}</p>}
+
+        {notFound ? (
+          <Link to={ROUTES.myQuizzes} className="button">
+            My Quizzes
+          </Link>
+        ) : (
+          <button
+            type="button"
+            className="button"
+            onClick={() => window.location.reload()}
+          >
+            Try again
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  if (!currentQuestion || status === "finished") {
+    return null;
+  }
+
+  return (
+    <main className={styles.container}>
+      <ProgressBar
+        current={currentIndex + 1}
+        total={total}
+        score={score}
+        secondsLeft={secondsLeft}
+      />
+
+      <QuestionCard
+        question={currentQuestion}
+        selected={selected}
+        revealed={revealed}
+        onSelect={handleSelect}
+      />
+
+      {revealed && (
+        <div className={styles.actions}>
+          <button
+            type="button"
+            className={`button ${styles.nextButton}`}
+            onClick={handleNext}
+          >
+            {currentIndex + 1 === total ? "See results" : "Next"}
+          </button>
+        </div>
+      )}
+    </main>
+  );
+}

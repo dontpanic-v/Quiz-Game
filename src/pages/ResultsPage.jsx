@@ -1,42 +1,146 @@
-/**
- * ResultsPage
- * ───────────
- * FILE    src/pages/ResultsPage.jsx  (+ ResultsPage.module.css)
- * OWNER   chea (only chea edits this file)
- * ROUTE   /results
- *
- * PURPOSE
- *   Summary after a quiz: score, percentage, a review of every question, and
- *   saves the game to the history (leaderboard).
- *
- * EXPORT
- *   export default function ResultsPage()
- *
- * USES
- *   useQuiz()     -> { questions, answers, score, total, status, quizMeta, resetQuiz }
- *   useSettings() -> { settings: { playerName, difficulty }, addResult }
- *   useNavigate, Navigate from 'react-router-dom';  ROUTES from '../siteConfig.js'
- *
- *   quizMeta = { title, setId }   setId is null for Open Trivia quizzes
- *   addResult({ playerName, quizTitle, difficulty, score, total, date })
- *     playerName: settings.playerName or 'Guest'
- *     quizTitle:  quizMeta.title
- *     difficulty: difficulty of the questions played (questions[0].difficulty)
- *     date:       new Date().toISOString()
- *
- * REQUIREMENTS
- *   1. If status !== 'finished' (page opened directly / refreshed) -> <Navigate to={ROUTES.home} replace />
- *   2. Save the result exactly once: useEffect + useRef guard (StrictMode runs effects twice)
- *   3. Big score "8 / 10" + percentage + message by percentage:
- *      100% "Perfect!", >= 80% "Great job!", >= 50% "Not bad!", else "Keep practicing!"
- *   4. Review list: for each question show the question, the player's answer
- *      (✓ green if correct, ✗ red if wrong, "Time's up" if null), and the correct answer
- *   5. Buttons:
- *      "Play again"   -> resetQuiz(); go to ROUTES.quiz (keep ?set=<setId> if custom)
- *      "Change settings" -> ROUTES.settings  (or ROUTES.myQuizzes for a custom quiz)
- *      "Leaderboard"  -> ROUTES.leaderboard
- *
- * DONE WHEN
- *   - finishing a quiz shows correct numbers and adds exactly ONE row to the leaderboard
- *   - opening /results directly redirects to Home
- */
+
+import { useEffect, useRef } from "react";
+import { useNavigate, Navigate } from "react-router-dom";
+
+import { useQuiz } from "../hooks/useQuiz.js";
+import { useSettings } from "../hooks/useSettings.js";
+import { ROUTES } from "../siteConfig.js";
+
+import styles from "./ResultsPage.module.css";
+
+export default function ResultsPage() {
+  const { questions, answers, score, total, status, quizMeta, resetQuiz } =
+    useQuiz();
+
+  const { settings, addResult } = useSettings();
+  const navigate = useNavigate();
+  const savedRef = useRef(false);
+
+  const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
+
+  useEffect(() => {
+    if (status !== "finished" || savedRef.current) return;
+
+    savedRef.current = true;
+
+    addResult({
+      playerName: settings.playerName || "Guest",
+      quizTitle: quizMeta.title,
+      difficulty: questions[0]?.difficulty || settings.difficulty,
+      score,
+      total,
+      date: new Date().toISOString(),
+    });
+  }, [
+    status,
+    addResult,
+    settings.playerName,
+    settings.difficulty,
+    quizMeta,
+    questions,
+    score,
+    total,
+  ]);
+
+  if (status !== "finished") {
+    return <Navigate to={ROUTES.home} replace />;
+  }
+
+  function getMessage() {
+    if (percentage === 100) return "Perfect!";
+    if (percentage >= 80) return "Great job!";
+    if (percentage >= 50) return "Not bad!";
+
+    return "Keep practicing!";
+  }
+
+  function handlePlayAgain() {
+    const setId = quizMeta.setId;
+
+    resetQuiz();
+
+    if (setId !== null) {
+      navigate(`${ROUTES.quiz}?set=${encodeURIComponent(setId)}`);
+    } else {
+      navigate(ROUTES.quiz);
+    }
+  }
+
+  function handleChangeSettings() {
+    navigate(quizMeta.setId !== null ? ROUTES.myQuizzes : ROUTES.settings);
+  }
+
+  return (
+    <main className={styles.container}>
+      <section className={styles.summary}>
+        <h1>Quiz Results</h1>
+
+        <p>{quizMeta.title}</p>
+
+        <div className={styles.score}>
+          {score} / {total}
+        </div>
+
+        <p className={styles.percentage}>{percentage}%</p>
+
+        <h2>{getMessage()}</h2>
+      </section>
+
+      <section className={styles.review}>
+        <h2>Answer Review</h2>
+
+        {questions.map((question, index) => {
+          const answerRecord = answers.find(
+            (a) => a.questionId === question.id,
+          );
+
+          const playerAnswer = answerRecord?.selected ?? null;
+          const isCorrect = answerRecord?.isCorrect ?? false;
+
+          return (
+            <article key={question.id} className={styles.reviewCard}>
+              <h3>
+                {index + 1}. {question.question}
+              </h3>
+
+              <p className={isCorrect ? styles.correct : styles.wrong}>
+                Your answer:{" "}
+                {playerAnswer == null
+                  ? "⏱ Time's up"
+                  : isCorrect
+                    ? `✓ ${playerAnswer}`
+                    : `✗ ${playerAnswer}`}
+              </p>
+
+              <p>
+                Correct answer: <strong>{question.correctAnswer}</strong>
+              </p>
+            </article>
+          );
+        })}
+      </section>
+
+      <div className={styles.actions}>
+        <button type="button" className="button" onClick={handlePlayAgain}>
+          Play again
+        </button>
+
+        <button
+          type="button"
+          className={styles.secondaryButton}
+          onClick={handleChangeSettings}
+        >
+          Change settings
+        </button>
+
+        <button
+          type="button"
+          className={styles.secondaryButton}
+          onClick={() => navigate(ROUTES.leaderboard)}
+        >
+          Leaderboard
+        </button>
+      </div>
+    </main>
+  );
+}
