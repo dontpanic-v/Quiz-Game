@@ -1,24 +1,48 @@
-/**
- * ProgressBar
- * ───────────
- * FILE    src/components/Quiz/ProgressBar.jsx  (+ ProgressBar.module.css)
- * OWNER   chea (only chea edits this file)
- *
- * PURPOSE
- *   Shows progress through the quiz, the score, and the timer.
- *
- * EXPORT
- *   export default function ProgressBar({ current, total, score, secondsLeft })
- *
- * PROPS
- *   current      number   1-based question number
- *   total        number
- *   score        number
- *   secondsLeft  number | null   null = hide timer
- *
- * REQUIREMENTS
- *   1. Text row: "Question 3 of 10" left, "Score: 2" and "⏱ 12s" right
- *   2. Bar below, filled width = current / total, animated with a CSS transition
- *   3. role="progressbar" with aria-valuenow={current} aria-valuemin={1} aria-valuemax={total}
- *   4. Timer text turns red at 5 seconds or less
- */
+
+import styles from './ProgressBar.module.css';
+
+export default function ProgressBar({
+    current,
+    total,
+    score,
+    secondsLeft
+}) {
+    const progress = total > 0 ? (current / total) * 100 : 0;
+
+    return (
+        <div className={styles.container}>
+            <div className={styles.info}>
+                <span>
+                    Question {current} of {total}
+                </span>
+
+                <div className={styles.stats}>
+                    <span>Score: {score}</span>
+
+                    {secondsLeft !== null && (
+                        <span className={`${styles.timer} ${
+                            secondsLeft <= 5 ? styles.warning : ''
+                        }`}>
+                            ⏱ {secondsLeft}s
+                            {secondsLeft <= 5 && ' — Hurry!'}
+                        </span>
+                    )}
+                </div>
+            </div>
+
+            <div
+                className={styles.track}
+                role="progressbar"
+                aria-label="Quiz progress"
+                aria-valuenow={current}
+                aria-valuemin={1}
+                aria-valuemax={total}
+            >
+                <div
+                    className={styles.fill}
+                    style={{ width: `${progress}%` }}
+                />
+            </div>
+        </div>
+    );
+}

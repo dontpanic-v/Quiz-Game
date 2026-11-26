@@ -1,0 +1,54 @@
+.option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-height: 44px;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.idle:hover {
+    background: var(--accent);
+    color: var(--on-accent);
+    border-color: var(--accent-border);
+}
+
+.correct {
+    background: var(--success-bg);
+    color: var(--success);
+    border: 2px solid var(--success);
+    font-weight: 600;
+}
+
+.wrong {
+    background: var(--danger-bg);
+    color: var(--danger);
+    border: 2px solid var(--danger);
+    font-weight: 600;
+}
+
+.disabled {
+    background: var(--bg);
+    color: var(--text);
+    border: 1px dashed var(--border);
+}
+
+.option:disabled {
+    cursor: default;
+}
+
+.option:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
