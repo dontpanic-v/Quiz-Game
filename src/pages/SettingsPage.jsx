@@ -6,19 +6,8 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { DIFFICULTIES, QUESTION_AMOUNTS, DEFAULT_SETTINGS, ROUTES } from '../siteConfig.js'
 import { useSettings } from '../hooks/useSettings.js'
+import { fetchCategories } from '../services/triviaApi.js'
 import styles from './SettingsPage.module.css'
-
-// TEMP mock until src/services/triviaApi.js is ready
-async function fetchCategoriesFallback() {
-  try {
-    const res = await fetch('https://opentdb.com/api_category.php')
-    if (!res.ok) throw new Error('API failed')
-    const data = await res.json()
-    return data.trivia_categories || []
-  } catch {
-    return []
-  }
-}
 
 const DIFFICULTY_DESCRIPTIONS = {
   easy: 'Casual and relaxed pace',
@@ -39,12 +28,15 @@ export default function SettingsPage() {
   useEffect(() => {
     let ignore = false
 
-    fetchCategoriesFallback().then((cats) => {
-      if (!ignore) {
-        setCategories(cats)
-        setLoadingCategories(false)
-      }
-    })
+    // On failure keep "Any category" so the page still works offline.
+    fetchCategories()
+      .catch(() => [])
+      .then((cats) => {
+        if (!ignore) {
+          setCategories(cats)
+          setLoadingCategories(false)
+        }
+      })
 
     return () => {
       ignore = true
