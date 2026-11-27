@@ -2,30 +2,15 @@
  * HomePage — Landing page: player greeting, setup chips, best score, quick start.
  * ROUTE: /
  */
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { ROUTES, APP_NAME, DEFAULT_SETTINGS, STORAGE_KEYS } from '../siteConfig.js'
-import { useLocalStorage } from '../hooks/useLocalStorage.js'
+import { ROUTES, APP_NAME } from '../siteConfig.js'
+import { useSettings } from '../hooks/useSettings.js'
 import styles from './HomePage.module.css'
-
-// TEMP mock until src/hooks/useSettings.js is ready
-function useSettingsFallback() {
-  const [settings, setSettings] = useLocalStorage(STORAGE_KEYS.settings, DEFAULT_SETTINGS)
-  const [history] = useLocalStorage(STORAGE_KEYS.history, [])
-
-  const updateSettings = useCallback(
-    (changes) => {
-      setSettings((prev) => ({ ...prev, ...changes }))
-    },
-    [setSettings]
-  )
-
-  return { settings, updateSettings, history }
-}
 
 export default function HomePage() {
   const navigate = useNavigate()
-  const { settings, updateSettings, history } = useSettingsFallback()
+  const { settings, updateSettings, history } = useSettings()
   const [nameInput, setNameInput] = useState('')
 
   // Best score calculated dynamically from history (best percentage)

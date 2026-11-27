@@ -2,25 +2,14 @@
  * LeaderboardPage — Rankings of all completed games with difficulty filters and summary statistics.
  * ROUTE: /leaderboard
  */
-import { useState, useMemo, useCallback } from 'react'
-import { DIFFICULTIES, STORAGE_KEYS } from '../siteConfig.js'
-import { useLocalStorage } from '../hooks/useLocalStorage.js'
+import { useState, useMemo } from 'react'
+import { DIFFICULTIES } from '../siteConfig.js'
+import { useSettings } from '../hooks/useSettings.js'
 import ScoreTable from '../components/Leaderboard/ScoreTable.jsx'
 import styles from './LeaderboardPage.module.css'
 
-// TEMP mock until src/hooks/useSettings.js is ready
-function useSettingsFallback() {
-  const [history, setHistory] = useLocalStorage(STORAGE_KEYS.history, [])
-
-  const clearHistory = useCallback(() => {
-    setHistory([])
-  }, [setHistory])
-
-  return { history, clearHistory }
-}
-
 export default function LeaderboardPage() {
-  const { history, clearHistory } = useSettingsFallback()
+  const { history, clearHistory } = useSettings()
   const [activeFilter, setActiveFilter] = useState('all')
 
   // Calculate sorted and filtered results during render

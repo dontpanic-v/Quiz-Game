@@ -2,16 +2,10 @@
  * SettingsPage — Configure player preferences, difficulty, question count, and category.
  * ROUTE: /settings
  */
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-  DIFFICULTIES,
-  QUESTION_AMOUNTS,
-  DEFAULT_SETTINGS,
-  STORAGE_KEYS,
-  ROUTES,
-} from '../siteConfig.js'
-import { useLocalStorage } from '../hooks/useLocalStorage.js'
+import { DIFFICULTIES, QUESTION_AMOUNTS, DEFAULT_SETTINGS, ROUTES } from '../siteConfig.js'
+import { useSettings } from '../hooks/useSettings.js'
 import styles from './SettingsPage.module.css'
 
 // TEMP mock until src/services/triviaApi.js is ready
@@ -26,23 +20,6 @@ async function fetchCategoriesFallback() {
   }
 }
 
-// TEMP mock until src/hooks/useSettings.js is ready
-function useSettingsFallback() {
-  const [settings, setSettings] = useLocalStorage(STORAGE_KEYS.settings, DEFAULT_SETTINGS)
-
-  const updateSettings = useCallback(
-    (changes) => {
-      setSettings((prev) => {
-        const next = { ...prev, ...changes }
-        return next
-      })
-    },
-    [setSettings]
-  )
-
-  return { settings, updateSettings }
-}
-
 const DIFFICULTY_DESCRIPTIONS = {
   easy: 'Casual and relaxed pace',
   medium: 'Standard trivia challenge',
@@ -51,7 +28,7 @@ const DIFFICULTY_DESCRIPTIONS = {
 
 export default function SettingsPage() {
   const navigate = useNavigate()
-  const { settings, updateSettings } = useSettingsFallback()
+  const { settings, updateSettings } = useSettings()
 
   const [categories, setCategories] = useState([])
   const [loadingCategories, setLoadingCategories] = useState(true)
