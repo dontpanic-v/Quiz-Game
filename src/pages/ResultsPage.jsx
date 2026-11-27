@@ -71,7 +71,7 @@ export default function ResultsPage() {
   }
 
   return (
-    <main className={styles.container}>
+    <div className={styles.container}>
       <section className={styles.summary}>
         <h1>Quiz Results</h1>
 
@@ -141,6 +141,6 @@ export default function ResultsPage() {
           Leaderboard
         </button>
       </div>
-    </main>
+    </div>
   );
 }

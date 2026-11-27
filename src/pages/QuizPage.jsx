@@ -232,7 +232,7 @@ export default function QuizPage() {
   }
 
   return (
-    <main className={styles.container}>
+    <div className={styles.container}>
       <ProgressBar
         current={currentIndex + 1}
         total={total}
@@ -258,6 +258,6 @@ export default function QuizPage() {
           </button>
         </div>
       )}
-    </main>
+    </div>
   );
 }
