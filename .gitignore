@@ -25,3 +25,15 @@ dist-ssr
 
 # env
 .env
+
+# LaTeX (reports and notes)
+*.tex
+*.bib
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.out
+*.toc
+*.synctex.gz

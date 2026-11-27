@@ -2,9 +2,12 @@
 
 A single-page trivia app built with React and Vite. Players answer timed multiple-choice
 questions from [Open Trivia DB](https://opentdb.com), from our own Cambodia question bank,
-or from quizzes they write themselves,
-get instant feedback, and compare scores on a local leaderboard. There is no backend:
-all state lives in React Context and is saved to `localStorage`.
+or from quizzes they write themselves, get instant feedback, and compare scores on a local
+leaderboard. There is no backend: all state lives in React Context and is saved to
+`localStorage`.
+
+- **Live app:** [https://puthi.app](https://puthi.app)
+- **Repository:** [https://github.com/dontpanic-v/Quiz-Game](https://github.com/dontpanic-v/Quiz-Game)
 
 ## Tech stack
 
