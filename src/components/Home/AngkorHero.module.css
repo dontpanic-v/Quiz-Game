@@ -1,0 +1,58 @@
+/* Banner keeps a fixed 8:3 shape and fills the Home column on any screen. */
+.hero {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 8 / 3;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+/* Each palm crown turns around its own base, like it is moving in a light breeze. */
+.sway {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+/* Motion only for people who have not asked their device to reduce it. */
+@media (prefers-reduced-motion: no-preference) {
+  .sway {
+    animation: sway 5s ease-in-out infinite alternate;
+  }
+
+  .clouds {
+    animation: drift 30s ease-in-out infinite alternate;
+  }
+
+  .shimmer {
+    animation: shimmer 3s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes sway {
+  from {
+    transform: rotate(-3deg);
+  }
+  to {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(40px);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    opacity: 0.25;
+  }
+  to {
+    opacity: 0.7;
+  }
+}

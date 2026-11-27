@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { ROUTES, APP_NAME, QUESTION_SOURCES } from '../siteConfig.js'
 import { useSettings } from '../hooks/useSettings.js'
+import AngkorHero from '../components/Home/AngkorHero.jsx'
 import styles from './HomePage.module.css'
 
 export default function HomePage() {
@@ -29,6 +30,7 @@ export default function HomePage() {
   return (
     <div className={styles.container}>
       <header className={styles.hero}>
+        <AngkorHero />
         <h1 className={styles.title}>{APP_NAME}</h1>
         <p className={styles.tagline}>
           Test your knowledge. Pick a level. Beat your best.
