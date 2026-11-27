@@ -1,5 +1,5 @@
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 
 import { useQuiz } from "../hooks/useQuiz.js";
@@ -15,6 +15,9 @@ export default function ResultsPage() {
   const { settings, addResult } = useSettings();
   const navigate = useNavigate();
   const savedRef = useRef(false);
+  // True after "Play again": the quiz is reset before the route changes,
+  // so skip the redirect to Home for that one render.
+  const [leaving, setLeaving] = useState(false);
 
   const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
 
@@ -42,6 +45,10 @@ export default function ResultsPage() {
     total,
   ]);
 
+  if (leaving) {
+    return null;
+  }
+
   if (status !== "finished") {
     return <Navigate to={ROUTES.home} replace />;
   }
@@ -57,6 +64,7 @@ export default function ResultsPage() {
   function handlePlayAgain() {
     const setId = quizMeta.setId;
 
+    setLeaving(true);
     resetQuiz();
 
     if (setId !== null) {
