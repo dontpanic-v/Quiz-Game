@@ -1,4 +1,5 @@
 
+import { Check, X } from 'lucide-react';
 import InlineCode from './InlineCode.jsx';
 import styles from './AnswerOption.module.css';
 
@@ -12,8 +13,8 @@ export default function AnswerOption({ text, state, onClick }) {
         >
             <span><InlineCode text={text} /></span>
 
-            {state === 'correct' && <span>✓ Correct</span>}
-            {state === 'wrong' && <span>✗ Wrong</span>}
+            {state === 'correct' && <span><Check size={16} aria-hidden="true" /> Correct</span>}
+            {state === 'wrong' && <span><X size={16} aria-hidden="true" /> Wrong</span>}
         </button>
     );
 }

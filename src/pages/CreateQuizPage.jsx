@@ -7,6 +7,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { DIFFICULTIES, ROUTES } from '../siteConfig.js'
 import { useQuizLibrary } from '../hooks/useQuizLibrary.js'
 import QuestionEditor from '../components/QuizBuilder/QuestionEditor.jsx'
+import { Plus } from 'lucide-react'
 import BackButton from '../components/Layout/BackButton.jsx'
 import ConfirmDialog from '../components/Layout/ConfirmDialog.jsx'
 import styles from './CreateQuizPage.module.css'
@@ -321,7 +322,7 @@ export default function CreateQuizPage() {
                 onClick={handleAddQuestion}
                 className={styles.addQuestionBtn}
               >
-                + Add Question
+                <Plus size={18} aria-hidden="true" /> Add Question
               </button>
             )}
           </div>
@@ -346,7 +347,7 @@ export default function CreateQuizPage() {
               onClick={handleAddQuestion}
               className={styles.bottomAddQuestionBtn}
             >
-              + Add Question
+              <Plus size={18} aria-hidden="true" /> Add Question
             </button>
           )}
         </div>

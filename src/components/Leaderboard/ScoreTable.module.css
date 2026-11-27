@@ -195,3 +195,10 @@
     text-align: left;
   }
 }
+
+/* Large soft icon above an empty-state message. */
+.emptyIcon {
+  display: block;
+  margin: 0 auto 12px;
+  color: var(--text-muted);
+}

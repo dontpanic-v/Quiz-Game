@@ -92,6 +92,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   transition: background 0.15s ease;
 }
 

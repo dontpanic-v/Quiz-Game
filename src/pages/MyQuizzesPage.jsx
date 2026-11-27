@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../siteConfig.js'
 import { useQuizLibrary } from '../hooks/useQuizLibrary.js'
 import QuizSetCard from '../components/QuizBuilder/QuizSetCard.jsx'
+import { ListPlus, Plus } from 'lucide-react'
 import BackButton from '../components/Layout/BackButton.jsx'
 import ConfirmDialog from '../components/Layout/ConfirmDialog.jsx'
 import styles from './MyQuizzesPage.module.css'
@@ -57,7 +58,7 @@ export default function MyQuizzesPage() {
               onClick={() => navigate(ROUTES.create)}
               className={styles.createBtn}
             >
-              + Create new quiz
+              <Plus size={18} aria-hidden="true" /> Create new quiz
             </button>
           </div>
         </div>
@@ -83,6 +84,7 @@ export default function MyQuizzesPage() {
       {/* Grid of Quizzes or Empty States */}
       {quizzes.length === 0 ? (
         <div className={styles.emptyState}>
+          <ListPlus size={40} className={styles.emptyIcon} aria-hidden="true" />
           <p className={styles.emptyTitle}>You haven't made any quizzes yet.</p>
           <p className={styles.emptyDesc}>
             Write your own multiple-choice quiz and test yourself or friends!

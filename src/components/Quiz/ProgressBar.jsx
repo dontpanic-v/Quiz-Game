@@ -1,4 +1,5 @@
 
+import { Timer } from 'lucide-react';
 import styles from './ProgressBar.module.css';
 
 export default function ProgressBar({
@@ -23,7 +24,7 @@ export default function ProgressBar({
                         <span className={`${styles.timer} ${
                             secondsLeft <= 5 ? styles.warning : ''
                         }`}>
-                            ⏱ {secondsLeft}s
+                            <Timer size={16} aria-hidden="true" /> {secondsLeft}s
                             {secondsLeft <= 5 && ' — Hurry!'}
                         </span>
                     )}

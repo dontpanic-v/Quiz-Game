@@ -6,6 +6,7 @@ import { useQuiz } from "../hooks/useQuiz.js";
 import { useSettings } from "../hooks/useSettings.js";
 import { ROUTES } from "../siteConfig.js";
 
+import { Check, Timer, X } from "lucide-react";
 import InlineCode from "../components/Quiz/InlineCode.jsx";
 import styles from "./ResultsPage.module.css";
 
@@ -115,10 +116,16 @@ export default function ResultsPage() {
               <p className={isCorrect ? styles.correct : styles.wrong}>
                 Your answer:{" "}
                 {playerAnswer == null ? (
-                  "⏱ Time's up"
+                  <>
+                    <Timer size={16} aria-hidden="true" /> Time's up
+                  </>
                 ) : (
                   <>
-                    {isCorrect ? "✓ " : "✗ "}
+                    {isCorrect ? (
+                      <Check size={16} aria-hidden="true" />
+                    ) : (
+                      <X size={16} aria-hidden="true" />
+                    )}{" "}
                     <InlineCode text={playerAnswer} />
                   </>
                 )}

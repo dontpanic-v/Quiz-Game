@@ -4,6 +4,7 @@
  */
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../../siteConfig.js'
+import { Trophy } from 'lucide-react'
 import Medal from './Medal.jsx'
 import styles from './ScoreTable.module.css'
 
@@ -11,6 +12,7 @@ export default function ScoreTable({ results = [] }) {
   if (!results || results.length === 0) {
     return (
       <div className={styles.emptyState}>
+        <Trophy size={40} className={styles.emptyIcon} aria-hidden="true" />
         <p className={styles.emptyText}>No games yet. Play your first quiz!</p>
         <Link to={ROUTES.quiz} className={styles.playLink}>
           Start a Quiz

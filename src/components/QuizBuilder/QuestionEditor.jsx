@@ -2,6 +2,7 @@
  * QuestionEditor — Controlled form block for editing one custom question.
  * PROPS: { index, value, errors, onChange, onRemove, canRemove }
  */
+import { X } from 'lucide-react'
 import styles from './QuestionEditor.module.css'
 
 export default function QuestionEditor({
@@ -159,7 +160,7 @@ export default function QuestionEditor({
                     className={styles.removeAnswerBtn}
                     aria-label={`Remove option ${aIdx + 1}`}
                   >
-                    ×
+                    <X size={20} aria-hidden="true" />
                   </button>
                 )}
               </div>

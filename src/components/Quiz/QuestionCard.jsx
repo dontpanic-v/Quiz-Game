@@ -1,4 +1,5 @@
 
+import { Check, Timer, X } from 'lucide-react';
 import AnswerOption from './AnswerOption.jsx';
 import InlineCode from './InlineCode.jsx';
 import styles from './QuestionCard.module.css';
@@ -29,14 +30,14 @@ export default function QuestionCard({
         const answer = <InlineCode text={question.correctAnswer} />;
 
         if (selected === null) {
-            return <>⏱ Time's up! The answer was {answer}</>;
+            return <><Timer size={18} aria-hidden="true" /> Time's up! The answer was {answer}</>;
         }
 
         if (selected === question.correctAnswer) {
-            return '✓ Correct!';
+            return <><Check size={18} aria-hidden="true" /> Correct!</>;
         }
 
-        return <>✗ Wrong, the answer was {answer}</>;
+        return <><X size={18} aria-hidden="true" /> Wrong, the answer was {answer}</>;
     }
 
     return (

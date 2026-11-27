@@ -14,6 +14,7 @@ import {
 } from '../siteConfig.js'
 import { useSettings } from '../hooks/useSettings.js'
 import { CAMBODIA_CATEGORIES, countCambodiaQuestions } from '../data/cambodia/index.js'
+import { Check } from 'lucide-react'
 import BackButton from '../components/Layout/BackButton.jsx'
 import ConfirmDialog from '../components/Layout/ConfirmDialog.jsx'
 import styles from './SettingsPage.module.css'
@@ -77,7 +78,11 @@ export default function SettingsPage() {
         <div className={styles.headerTitleRow}>
           <h1 className={styles.title}>Quiz Settings</h1>
           <div className={styles.savedBadgeWrapper} aria-live="polite">
-            {savedVisible && <span className={styles.savedBadge}>Saved ✓</span>}
+            {savedVisible && (
+              <span className={styles.savedBadge}>
+                <Check size={14} aria-hidden="true" /> Saved
+              </span>
+            )}
           </div>
         </div>
         <p className={styles.subtitle}>

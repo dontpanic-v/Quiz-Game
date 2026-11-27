@@ -18,35 +18,16 @@
  *     leave the app if the page was opened directly.
  */
 import { Link } from 'react-router-dom'
+import { ChevronLeft } from 'lucide-react'
 import styles from './BackButton.module.css'
 
-function ChevronLeft() {
-  return (
-    <svg
-      className={styles.icon}
-      viewBox="0 0 24 24"
-      width="18"
-      height="18"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path
-        d="M15 18l-6-6 6-6"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
 export default function BackButton({ to, onClick, children }) {
+  const icon = <ChevronLeft size={18} strokeWidth={2.5} aria-hidden="true" />
+
   if (onClick) {
     return (
       <button type="button" className={styles.back} onClick={onClick}>
-        <ChevronLeft />
+        {icon}
         {children}
       </button>
     )
@@ -54,7 +35,7 @@ export default function BackButton({ to, onClick, children }) {
 
   return (
     <Link to={to} className={styles.back}>
-      <ChevronLeft />
+      {icon}
       {children}
     </Link>
   )

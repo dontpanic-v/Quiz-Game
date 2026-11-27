@@ -137,6 +137,12 @@ textarea {
   font: inherit;
 }
 
+/* Lucide icons (lucide-react) sit on the text line, take the text color and never shrink. */
+.lucide {
+  flex-shrink: 0;
+  vertical-align: -0.15em;
+}
+
 /* Shared primary button. Use on <button> or <Link>: className="button" */
 .button {
   display: inline-flex;

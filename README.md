@@ -17,6 +17,7 @@ leaderboard. There is no backend: all state lives in React Context and is saved 
 | Routing    | React Router 7 (`BrowserRouter`, nested layout route)    |
 | Build      | Vite 8 with `@vitejs/plugin-react`                       |
 | Styling    | CSS Modules per component + global CSS variables         |
+| Icons      | [Lucide](https://lucide.dev) (`lucide-react`)            |
 | State      | React Context, one provider per domain                   |
 | Storage    | `localStorage` through a `useLocalStorage` hook          |
 | Data       | Open Trivia DB REST API (no key) + Cambodia question bank in `src/data/` |

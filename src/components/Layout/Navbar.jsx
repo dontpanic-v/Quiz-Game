@@ -20,6 +20,7 @@
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { APP_NAME, ROUTES } from '../../siteConfig.js'
+import { Menu, X } from 'lucide-react'
 import { useQuiz } from '../../hooks/useQuiz.js'
 import styles from './Navbar.module.css'
 
@@ -81,6 +82,7 @@ export default function Navbar() {
             aria-expanded={isOpen}
             aria-controls="mobile-menu"
           >
+            {isOpen ? <X size={18} aria-hidden="true" /> : <Menu size={18} aria-hidden="true" />}
             {isOpen ? 'Close' : 'Menu'}
           </button>
         </div>
