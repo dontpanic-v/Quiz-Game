@@ -41,7 +41,7 @@ npm run dev     # start dev server at http://localhost:5173
 
 **Each person only edits their own files.** Every file starts with a comment that says
 who owns it and exactly what it must do (PURPOSE, EXPORT, USES, REQUIREMENTS). Read that
-comment first, or give it to your AI assistant as the spec.
+comment first and treat it as the spec.
 
 ## Folder structure
 

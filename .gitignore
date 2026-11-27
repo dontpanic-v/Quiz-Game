@@ -25,7 +25,3 @@ dist-ssr
 
 # env
 .env
-
-# Team / AI notes (shared outside git)
-AGENTS.md
-CLAUDE.md
