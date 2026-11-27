@@ -13,7 +13,7 @@
  *   The context object lives in ./settingsContextObject.js (ESLint react-refresh rule).
  *
  * CONTEXT VALUE (read by others through useSettings())
- *   settings        { playerName, difficulty, amount, category }
+ *   settings        { playerName, source, difficulty, amount, category }
  *   updateSettings  (changes) => void            merge changes into settings
  *   history         Result[]                     newest first
  *   addResult       (result without id) => void  adds id via crypto.randomUUID(), puts it first
@@ -24,7 +24,7 @@
 import { useCallback, useMemo } from 'react'
 import { SettingsContext } from './settingsContextObject.js'
 import { useLocalStorage } from '../hooks/useLocalStorage.js'
-import { DEFAULT_SETTINGS, STORAGE_KEYS } from '../siteConfig.js'
+import { DEFAULT_SETTINGS, QUESTION_AMOUNTS, STORAGE_KEYS } from '../siteConfig.js'
 
 const EMPTY_HISTORY = []
 
@@ -48,15 +48,24 @@ export function SettingsProvider({ children }) {
 
   const clearHistory = useCallback(() => setHistory([]), [setHistory])
 
+  // An amount saved before the options changed (e.g. 20) falls back to the default.
+  const safeSettings = useMemo(
+    () =>
+      QUESTION_AMOUNTS.includes(settings.amount)
+        ? settings
+        : { ...settings, amount: DEFAULT_SETTINGS.amount },
+    [settings],
+  )
+
   const value = useMemo(
     () => ({
-      settings,
+      settings: safeSettings,
       updateSettings,
       history: Array.isArray(history) ? history : [],
       addResult,
       clearHistory,
     }),
-    [settings, updateSettings, history, addResult, clearHistory],
+    [safeSettings, updateSettings, history, addResult, clearHistory],
   )
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>

@@ -8,12 +8,16 @@ import { useQuizLibrary } from "../hooks/useQuizLibrary.js";
 import { useTimer } from "../hooks/useTimer.js";
 
 import { fetchQuestions } from "../services/triviaApi.js";
+import {
+  CAMBODIA_CATEGORIES,
+  getCambodiaQuestions,
+} from "../data/cambodia/index.js";
 import { shuffle } from "../utils/shuffle.js";
 
 import ProgressBar from "../components/Quiz/ProgressBar.jsx";
 import QuestionCard from "../components/Quiz/QuestionCard.jsx";
 
-import { ROUTES } from "../siteConfig.js";
+import { ROUTES, OPEN_TRIVIA_CATEGORIES } from "../siteConfig.js";
 import styles from "./QuizPage.module.css";
 
 function secondsFor(difficulty) {
@@ -118,8 +122,26 @@ export default function QuizPage() {
             title: quiz.title,
             setId: quiz.id,
           };
+        } else if (settings.source === "cambodia") {
+          questions = getCambodiaQuestions(settings);
+
+          const categoryName = CAMBODIA_CATEGORIES.find(
+            (c) => c.id === settings.category,
+          )?.name;
+
+          metadata = {
+            title: categoryName ? `Cambodia: ${categoryName}` : "Cambodia",
+            setId: null,
+          };
         } else {
-          questions = await fetchQuestions(settings);
+          // Ignore a category saved before the list was shortened.
+          const category = OPEN_TRIVIA_CATEGORIES.some(
+            (c) => c.id === settings.category,
+          )
+            ? settings.category
+            : "";
+
+          questions = await fetchQuestions({ ...settings, category });
 
           metadata = {
             title: "Open Trivia",

@@ -10,13 +10,30 @@ export const APP_NAME = 'Quiz Game'
 
 export const DIFFICULTIES = ['easy', 'medium', 'hard']
 
-export const QUESTION_AMOUNTS = [5, 10, 15, 20]
+export const QUESTION_AMOUNTS = [5, 10]
+
+// Where questions come from. 'cambodia' = our own bank in src/data/cambodia/.
+export const QUESTION_SOURCES = [
+  { id: 'opentdb', label: 'Open Trivia' },
+  { id: 'cambodia', label: 'Cambodia' },
+]
+
+// Short list of Open Trivia DB categories shown in Settings (id = Open Trivia category id).
+export const OPEN_TRIVIA_CATEGORIES = [
+  { id: '9', name: 'General Knowledge' },
+  { id: '23', name: 'History' },
+  { id: '22', name: 'Geography' },
+  { id: '17', name: 'Science & Nature' },
+  { id: '12', name: 'Music' },
+  { id: '21', name: 'Sports' },
+]
 
 export const DEFAULT_SETTINGS = {
   playerName: '',
+  source: 'opentdb', // one of QUESTION_SOURCES ids
   difficulty: 'easy', // one of DIFFICULTIES
   amount: 10, // one of QUESTION_AMOUNTS
-  category: '', // '' = any category (Open Trivia DB category id otherwise)
+  category: '', // '' = any category; Open Trivia id or Cambodia category id, per source
 }
 
 // Keys used in localStorage. Prefix avoids clashing with other apps on localhost.

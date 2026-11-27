@@ -4,7 +4,7 @@
  */
 import { useState, useMemo } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { ROUTES, APP_NAME } from '../siteConfig.js'
+import { ROUTES, APP_NAME, QUESTION_SOURCES } from '../siteConfig.js'
 import { useSettings } from '../hooks/useSettings.js'
 import styles from './HomePage.module.css'
 
@@ -33,6 +33,8 @@ export default function HomePage() {
 
   const difficultyLabel =
     settings.difficulty.charAt(0).toUpperCase() + settings.difficulty.slice(1)
+  const sourceLabel =
+    QUESTION_SOURCES.find((src) => src.id === settings.source)?.label ?? 'Open Trivia'
 
   return (
     <div className={styles.container}>
@@ -81,7 +83,7 @@ export default function HomePage() {
         <div className={styles.setupInfo}>
           <span className={styles.setupLabel}>Current Setup:</span>
           <span className={styles.chip}>
-            {difficultyLabel} · {settings.amount} questions
+            {sourceLabel} · {difficultyLabel} · {settings.amount} questions
           </span>
         </div>
         <Link to={ROUTES.settings} className={styles.setupChangeLink}>

@@ -4,9 +4,16 @@
  */
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { DIFFICULTIES, QUESTION_AMOUNTS, DEFAULT_SETTINGS, ROUTES } from '../siteConfig.js'
+import {
+  DIFFICULTIES,
+  QUESTION_AMOUNTS,
+  QUESTION_SOURCES,
+  OPEN_TRIVIA_CATEGORIES,
+  DEFAULT_SETTINGS,
+  ROUTES,
+} from '../siteConfig.js'
 import { useSettings } from '../hooks/useSettings.js'
-import { fetchCategories } from '../services/triviaApi.js'
+import { CAMBODIA_CATEGORIES, countCambodiaQuestions } from '../data/cambodia/index.js'
 import styles from './SettingsPage.module.css'
 
 const DIFFICULTY_DESCRIPTIONS = {
@@ -19,29 +26,8 @@ export default function SettingsPage() {
   const navigate = useNavigate()
   const { settings, updateSettings } = useSettings()
 
-  const [categories, setCategories] = useState([])
-  const [loadingCategories, setLoadingCategories] = useState(true)
   const [savedVisible, setSavedVisible] = useState(false)
   const savedTimerRef = useRef(null)
-
-  // Fetch categories with ignore cleanup
-  useEffect(() => {
-    let ignore = false
-
-    // On failure keep "Any category" so the page still works offline.
-    fetchCategories()
-      .catch(() => [])
-      .then((cats) => {
-        if (!ignore) {
-          setCategories(cats)
-          setLoadingCategories(false)
-        }
-      })
-
-    return () => {
-      ignore = true
-    }
-  }, [])
 
   // Trigger transient "Saved ✓" text
   function triggerSavedBadge() {
@@ -62,6 +48,23 @@ export default function SettingsPage() {
     updateSettings({ [field]: value })
     triggerSavedBadge()
   }
+
+  // Category ids differ per source, so switching source resets the category.
+  function handleSourceChange(source) {
+    if (source === settings.source) return
+    updateSettings({ source, category: '' })
+    triggerSavedBadge()
+  }
+
+  const isCambodia = settings.source === 'cambodia'
+  const categoryOptions = isCambodia ? CAMBODIA_CATEGORIES : OPEN_TRIVIA_CATEGORIES
+  // A category saved before the list was shortened shows as "Any category".
+  const categoryValue = categoryOptions.some((c) => c.id === settings.category)
+    ? settings.category
+    : ''
+  const cambodiaCount = isCambodia
+    ? countCambodiaQuestions({ difficulty: settings.difficulty, category: categoryValue })
+    : 0
 
   function handleReset() {
     if (window.confirm('Reset all settings to default values?')) {
@@ -99,6 +102,28 @@ export default function SettingsPage() {
             placeholder="Enter your name (max 20 chars)"
             className={styles.textInput}
           />
+        </section>
+
+        {/* Question Source */}
+        <section className={styles.section}>
+          <span className={styles.sectionLabel}>Question Source</span>
+          <div className={styles.segmentedRow} role="radiogroup" aria-label="Question source">
+            {QUESTION_SOURCES.map(({ id, label }) => {
+              const isSelected = settings.source === id
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  role="radio"
+                  aria-checked={isSelected}
+                  onClick={() => handleSourceChange(id)}
+                  className={`${styles.segmentBtn} ${isSelected ? styles.activeSegmentBtn : ''}`}
+                >
+                  {label}
+                </button>
+              )
+            })}
+          </div>
         </section>
 
         {/* Difficulty */}
@@ -153,25 +178,31 @@ export default function SettingsPage() {
         {/* Category */}
         <section className={styles.section}>
           <label htmlFor="settings-category" className={styles.sectionLabel}>
-            Trivia Category
+            Category
           </label>
           <select
             id="settings-category"
-            value={settings.category}
+            value={categoryValue}
             onChange={(e) => handleChange('category', e.target.value)}
             className={styles.selectInput}
+            aria-describedby={isCambodia ? 'settings-category-hint' : undefined}
           >
             <option value="">Any category</option>
-            {loadingCategories ? (
-              <option disabled>Loading categories…</option>
-            ) : (
-              categories.map((cat) => (
-                <option key={cat.id} value={String(cat.id)}>
-                  {cat.name}
-                </option>
-              ))
-            )}
+            {categoryOptions.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
           </select>
+          {isCambodia && (
+            <p id="settings-category-hint" className={styles.hint}>
+              {cambodiaCount === 0
+                ? `No ${settings.difficulty} questions here yet.`
+                : cambodiaCount < settings.amount
+                  ? `${cambodiaCount} ${settings.difficulty} questions available, so a game uses all ${cambodiaCount}.`
+                  : `${cambodiaCount} ${settings.difficulty} questions available.`}
+            </p>
+          )}
         </section>
 
 

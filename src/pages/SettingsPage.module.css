@@ -77,6 +77,12 @@
   color: var(--text-h);
 }
 
+.hint {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text);
+}
+
 .textInput,
 .selectInput {
   width: 100%;
