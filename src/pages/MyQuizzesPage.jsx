@@ -1,19 +1,21 @@
 /**
- * MyQuizzesPage — Library of player-created quizzes with search, play, edit, delete, export/import.
+ * MyQuizzesPage — Library of player-created quizzes with search, play, edit and delete.
  * ROUTE: /my-quizzes
  */
-import { useState, useMemo, useRef } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../siteConfig.js'
 import { useQuizLibrary } from '../hooks/useQuizLibrary.js'
 import QuizSetCard from '../components/QuizBuilder/QuizSetCard.jsx'
+import BackButton from '../components/Layout/BackButton.jsx'
+import ConfirmDialog from '../components/Layout/ConfirmDialog.jsx'
 import styles from './MyQuizzesPage.module.css'
 
 export default function MyQuizzesPage() {
   const navigate = useNavigate()
-  const { quizzes = [], deleteQuiz, createQuiz } = useQuizLibrary()
+  const { quizzes = [], deleteQuiz } = useQuizLibrary()
   const [searchQuery, setSearchQuery] = useState('')
-  const fileInputRef = useRef(null)
+  const [quizToDelete, setQuizToDelete] = useState(null)
 
   // Real-time title search calculation during render
   const filteredQuizzes = useMemo(() => {
@@ -32,59 +34,15 @@ export default function MyQuizzesPage() {
     navigate(`${ROUTES.create}/${quizId}`)
   }
 
-  function handleDelete(quiz) {
-    if (window.confirm(`Delete "${quiz.title}"? This cannot be undone.`)) {
-      deleteQuiz(quiz.id)
-    }
-  }
-
-  // Bonus feature: Export quiz library to .json
-  function handleExportLibrary() {
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(quizzes, null, 2))
-    const downloadAnchor = document.createElement('a')
-    downloadAnchor.setAttribute('href', dataStr)
-    downloadAnchor.setAttribute('download', `quiz-library-${new Date().toISOString().slice(0, 10)}.json`)
-    document.body.appendChild(downloadAnchor)
-    downloadAnchor.click()
-    downloadAnchor.remove()
-  }
-
-  // Bonus feature: Import quizzes from .json
-  function handleFileImport(e) {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      try {
-        const imported = JSON.parse(event.target.result)
-        const quizList = Array.isArray(imported) ? imported : [imported]
-        let addedCount = 0
-
-        quizList.forEach((q) => {
-          if (q.title && Array.isArray(q.questions) && q.questions.length > 0) {
-            createQuiz({
-              title: q.title,
-              description: q.description || '',
-              difficulty: q.difficulty || 'easy',
-              questions: q.questions,
-            })
-            addedCount++
-          }
-        })
-
-        alert(`Successfully imported ${addedCount} quiz${addedCount === 1 ? '' : 'zes'}!`)
-      } catch {
-        alert('Invalid JSON file format. Could not import quizzes.')
-      } finally {
-        if (fileInputRef.current) fileInputRef.current.value = ''
-      }
-    }
-    reader.readAsText(file)
+  function handleConfirmDelete() {
+    deleteQuiz(quizToDelete.id)
+    setQuizToDelete(null)
   }
 
   return (
     <div className={styles.container}>
+      <BackButton to={ROUTES.home}>Home</BackButton>
+
       <header className={styles.header}>
         <div className={styles.titleRow}>
           <div>
@@ -104,7 +62,7 @@ export default function MyQuizzesPage() {
           </div>
         </div>
 
-        {/* Toolbar: Search + Export/Import */}
+        {/* Toolbar: Search */}
         <div className={styles.toolbar}>
           <div className={styles.searchWrapper}>
             <label htmlFor="quiz-search-input" className={styles.srOnly}>
@@ -118,28 +76,6 @@ export default function MyQuizzesPage() {
               placeholder="Search quizzes by title…"
               className={styles.searchInput}
             />
-          </div>
-
-          <div className={styles.backupActions}>
-            <button
-              type="button"
-              onClick={handleExportLibrary}
-              disabled={quizzes.length === 0}
-              className={styles.toolBtn}
-              title="Download all quizzes as a JSON file"
-            >
-              Export JSON
-            </button>
-            <label className={styles.toolBtn}>
-              Import JSON
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".json"
-                onChange={handleFileImport}
-                className={styles.hiddenFileInput}
-              />
-            </label>
           </div>
         </div>
       </header>
@@ -180,11 +116,25 @@ export default function MyQuizzesPage() {
               quiz={quiz}
               onPlay={() => handlePlay(quiz.id)}
               onEdit={() => handleEdit(quiz.id)}
-              onDelete={() => handleDelete(quiz)}
+              onDelete={() => setQuizToDelete(quiz)}
             />
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={quizToDelete !== null}
+        title="Delete this quiz?"
+        message={
+          quizToDelete
+            ? `"${quizToDelete.title}" and its ${quizToDelete.questions?.length ?? 0} questions will be deleted. This can't be undone.`
+            : ''
+        }
+        confirmLabel="Delete quiz"
+        cancelLabel="Keep quiz"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setQuizToDelete(null)}
+      />
     </div>
   )
 }

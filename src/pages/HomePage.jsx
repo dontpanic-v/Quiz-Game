@@ -1,8 +1,8 @@
 /**
- * HomePage — Landing page: player greeting, setup chips, best score, quick start.
+ * HomePage — Landing page: player greeting, setup chips, quick start.
  * ROUTE: /
  */
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { ROUTES, APP_NAME, QUESTION_SOURCES } from '../siteConfig.js'
 import { useSettings } from '../hooks/useSettings.js'
@@ -10,18 +10,8 @@ import styles from './HomePage.module.css'
 
 export default function HomePage() {
   const navigate = useNavigate()
-  const { settings, updateSettings, history } = useSettings()
+  const { settings, updateSettings } = useSettings()
   const [nameInput, setNameInput] = useState('')
-
-  // Best score calculated dynamically from history (best percentage)
-  const bestRecord = useMemo(() => {
-    if (!history || history.length === 0) return null
-    return history.reduce((best, curr) => {
-      const bestPct = best.total > 0 ? best.score / best.total : 0
-      const currPct = curr.total > 0 ? curr.score / curr.total : 0
-      return currPct > bestPct ? curr : best
-    }, history[0])
-  }, [history])
 
   function handleSaveName(e) {
     e.preventDefault()
@@ -90,15 +80,6 @@ export default function HomePage() {
           Change
         </Link>
       </section>
-
-      {bestRecord && (
-        <section className={styles.bestBanner}>
-          <span className={styles.trophy}>🏆</span>
-          <span>
-            Your best: <strong>{bestRecord.score}/{bestRecord.total}</strong> ({bestRecord.difficulty})
-          </span>
-        </section>
-      )}
 
       <div className={styles.actionGroup}>
         <button

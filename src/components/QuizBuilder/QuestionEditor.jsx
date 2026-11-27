@@ -109,15 +109,6 @@ export default function QuestionEditor({
           <span className={styles.answersTitle}>
             Answers (2–4 options, choose the correct one) <span className={styles.required}>*</span>
           </span>
-          {answers.length < 4 && (
-            <button
-              type="button"
-              onClick={handleAddAnswer}
-              className={styles.addAnswerBtn}
-            >
-              + Add option
-            </button>
-          )}
         </div>
 
         {errors.answers && (
@@ -139,10 +130,7 @@ export default function QuestionEditor({
             const radioId = `q-${index}-rad-${aIdx}`
 
             return (
-              <div
-                key={aIdx}
-                className={`${styles.answerRow} ${isCorrect ? styles.correctRow : ''}`}
-              >
+              <div key={aIdx} className={styles.answerRow}>
                 <input
                   type="radio"
                   id={radioId}
@@ -177,6 +165,14 @@ export default function QuestionEditor({
               </div>
             )
           })}
+
+          {/* Last row adds an option, styled like an empty option. */}
+          {answers.length < 4 && (
+            <button type="button" onClick={handleAddAnswer} className={styles.addOptionRow}>
+              <span className={styles.addOptionCircle} aria-hidden="true" />
+              Add option
+            </button>
+          )}
         </div>
       </div>
     </fieldset>

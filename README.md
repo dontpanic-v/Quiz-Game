@@ -80,13 +80,13 @@ All paths are defined once in `ROUTES` (`src/siteConfig.js`). Every page renders
 
 | Path               | Page              | Purpose                                                    |
 | ------------------ | ----------------- | ---------------------------------------------------------- |
-| `/`                | `HomePage`        | Greeting, current setup, best score, start button          |
+| `/`                | `HomePage`        | Greeting, current setup, start button                      |
 | `/settings`        | `SettingsPage`    | Player name, question source, difficulty, count, category  |
 | `/quiz`            | `QuizPage`        | Play a quiz from the source in Settings (Open Trivia or Cambodia) |
 | `/quiz?set=<id>`   | `QuizPage`        | Play a custom quiz from the library                        |
 | `/results`         | `ResultsPage`     | Score, answer review, saves the game to history            |
 | `/leaderboard`     | `LeaderboardPage` | Past games, filter by difficulty, summary stats            |
-| `/my-quizzes`      | `MyQuizzesPage`   | Custom quiz library: play, edit, delete, export as JSON    |
+| `/my-quizzes`      | `MyQuizzesPage`   | Custom quiz library: search, play, edit, delete            |
 | `/create`          | `CreateQuizPage`  | Create a custom quiz                                       |
 | `/create/:quizId`  | `CreateQuizPage`  | Edit an existing custom quiz                               |
 | `*`                | `NotFoundPage`    | Unknown URL                                                |
@@ -115,7 +115,13 @@ stateDiagram-v2
 5. **Save.** `ResultsPage` calls `addResult` exactly once (guarded by a ref). Opening
    `/results` without a finished game redirects to `/`.
 
-While a game is `playing`, the navbar asks for confirmation before leaving.
+**Leaving mid-game.** The quiz page has a *Leave quiz* button in the top-left corner. It and
+every navbar link call `requestLeave(to)`, which opens one shared `ConfirmDialog`
+("Leave this quiz?") and pauses the timer while it is open. Focus starts on *Keep playing*;
+Escape or a click outside also keeps playing. *Leave quiz* goes to My Quizzes for a custom
+quiz, Home for the others, or to the navbar link that was clicked. Leaving by the browser's
+Back button ends the game quietly (`abandonQuiz`), and closing or reloading the tab shows
+the browser's own warning.
 
 ## Data model
 
@@ -236,6 +242,21 @@ Each question looks like this:
   up to the chosen amount.
 - Write questions in your own words. Quiz websites such as FunTrivia are copyrighted, so
   do not copy their questions.
+
+## Shared UI patterns
+
+- **Back button** (`components/Layout/BackButton.jsx`). Pages below the home page show a
+  muted back link in the top-left: Settings, My Quizzes and Leaderboard go to Home, the quiz
+  editor goes to My Quizzes, and a running quiz shows *Leave quiz*. It always goes to a fixed
+  parent page, never `history.back()`.
+- **Confirm dialog** (`components/Layout/ConfirmDialog.jsx`). Every action that loses
+  something asks first with the same dialog: leaving a quiz, deleting a quiz, discarding
+  unsaved edits, clearing the leaderboard and resetting settings. It is built on the native
+  `<dialog>` element, names exactly what will be lost, uses verb buttons ("Delete quiz" /
+  "Keep quiz", never Yes / No) and puts focus on the safe choice. The browser's built-in
+  `window.confirm` is not used anywhere.
+- **Medals** (`components/Leaderboard/Medal.jsx`). Ranks 1 to 3 on the leaderboard show a
+  flat two-tone gold, silver or bronze medal next to the rank number.
 
 ## Styling
 

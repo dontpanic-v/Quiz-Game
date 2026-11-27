@@ -3,14 +3,17 @@
  * ROUTE: /leaderboard
  */
 import { useState, useMemo } from 'react'
-import { DIFFICULTIES } from '../siteConfig.js'
+import { DIFFICULTIES, ROUTES } from '../siteConfig.js'
 import { useSettings } from '../hooks/useSettings.js'
 import ScoreTable from '../components/Leaderboard/ScoreTable.jsx'
+import BackButton from '../components/Layout/BackButton.jsx'
+import ConfirmDialog from '../components/Layout/ConfirmDialog.jsx'
 import styles from './LeaderboardPage.module.css'
 
 export default function LeaderboardPage() {
   const { history, clearHistory } = useSettings()
   const [activeFilter, setActiveFilter] = useState('all')
+  const [confirmClear, setConfirmClear] = useState(false)
 
   // Calculate sorted and filtered results during render
   const filteredAndSortedResults = useMemo(() => {
@@ -52,14 +55,15 @@ export default function LeaderboardPage() {
     return { gamesPlayed, averagePct, bestPct }
   }, [filteredAndSortedResults])
 
-  function handleClearHistory() {
-    if (window.confirm('Delete all scores? This cannot be undone.')) {
-      clearHistory()
-    }
+  function handleConfirmClear() {
+    clearHistory()
+    setConfirmClear(false)
   }
 
   return (
     <div className={styles.container}>
+      <BackButton to={ROUTES.home}>Home</BackButton>
+
       <header className={styles.header}>
         <div className={styles.titleRow}>
           <div>
@@ -71,7 +75,7 @@ export default function LeaderboardPage() {
           {history.length > 0 && (
             <button
               type="button"
-              onClick={handleClearHistory}
+              onClick={() => setConfirmClear(true)}
               className={styles.clearBtn}
             >
               Clear history
@@ -125,6 +129,16 @@ export default function LeaderboardPage() {
 
       {/* Results Table */}
       <ScoreTable results={filteredAndSortedResults} />
+
+      <ConfirmDialog
+        open={confirmClear}
+        title="Clear the leaderboard?"
+        message={`All ${history.length} saved ${history.length === 1 ? 'game' : 'games'} will be deleted. This can't be undone.`}
+        confirmLabel="Clear history"
+        cancelLabel="Keep scores"
+        onConfirm={handleConfirmClear}
+        onCancel={() => setConfirmClear(false)}
+      />
     </div>
   )
 }

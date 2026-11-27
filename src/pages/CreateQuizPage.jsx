@@ -7,6 +7,8 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { DIFFICULTIES, ROUTES } from '../siteConfig.js'
 import { useQuizLibrary } from '../hooks/useQuizLibrary.js'
 import QuestionEditor from '../components/QuizBuilder/QuestionEditor.jsx'
+import BackButton from '../components/Layout/BackButton.jsx'
+import ConfirmDialog from '../components/Layout/ConfirmDialog.jsx'
 import styles from './CreateQuizPage.module.css'
 
 function createEmptyQuestion() {
@@ -28,6 +30,7 @@ export default function CreateQuizPage() {
   const notFound = isEditMode && !existing
 
   const [isDirty, setIsDirty] = useState(false)
+  const [confirmDiscard, setConfirmDiscard] = useState(false)
 
   // Form state initialized with existing quiz or blank defaults
   const [title, setTitle] = useState(() => existing?.title || '')
@@ -197,11 +200,11 @@ export default function CreateQuizPage() {
     navigate(ROUTES.myQuizzes)
   }
 
+  // Leaving with unsaved edits asks first; with nothing changed it just goes back.
   function handleCancel() {
     if (isDirty) {
-      if (!window.confirm('You have unsaved changes. Discard them and leave?')) {
-        return
-      }
+      setConfirmDiscard(true)
+      return
     }
     navigate(ROUTES.myQuizzes)
   }
@@ -220,6 +223,8 @@ export default function CreateQuizPage() {
 
   return (
     <div className={styles.container}>
+      <BackButton onClick={handleCancel}>My Quizzes</BackButton>
+
       <header className={styles.header}>
         <h1 className={styles.title}>
           {isEditMode ? 'Edit Quiz' : 'Create Quiz'}
@@ -360,6 +365,20 @@ export default function CreateQuizPage() {
           </button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={confirmDiscard}
+        title="Discard your changes?"
+        message={
+          isEditMode
+            ? "Your edits to this quiz haven't been saved and will be lost."
+            : "This new quiz hasn't been saved and will be lost."
+        }
+        confirmLabel="Discard changes"
+        cancelLabel="Keep editing"
+        onConfirm={() => navigate(ROUTES.myQuizzes)}
+        onCancel={() => setConfirmDiscard(false)}
+      />
     </div>
   )
 }

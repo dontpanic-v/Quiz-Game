@@ -1,0 +1,96 @@
+.dialog {
+  width: min(420px, calc(100% - 32px));
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: 0 8px 32px rgb(20 26 41 / 0.24);
+}
+
+/* Dim the page so the question is the only thing in focus. */
+.dialog::backdrop {
+  background: rgb(20 26 41 / 0.55);
+}
+
+.content {
+  padding: 24px;
+}
+
+.title {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: var(--text-h);
+}
+
+.message {
+  margin: 0 0 24px;
+  color: var(--text);
+}
+
+/* Both choices sit together, the safe one on the right where the eye ends. */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancelBtn {
+  min-width: 140px;
+}
+
+/* Destructive choice: red text and outline, clearly secondary to "Keep playing". */
+.confirmBtn {
+  min-height: 44px;
+  padding: 10px 20px;
+  border: 1px solid var(--danger);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--danger);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.confirmBtn:hover {
+  background: var(--danger-bg);
+}
+
+.confirmBtn:focus-visible {
+  outline: 2px solid var(--danger);
+  outline-offset: 2px;
+}
+
+/* Short fade and scale in, only for people who have not asked for less motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .dialog[open] {
+    animation: dialog-in 150ms ease-out;
+  }
+
+  .dialog[open]::backdrop {
+    animation: backdrop-in 150ms ease-out;
+  }
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Phones: full-width stacked buttons, the safe choice at the bottom where the thumb rests. */
+@media (max-width: 480px) {
+  .actions {
+    flex-direction: column;
+  }
+
+  .actions button {
+    width: 100%;
+  }
+}

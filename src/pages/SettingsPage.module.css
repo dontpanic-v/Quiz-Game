@@ -102,50 +102,6 @@
   border-color: transparent;
 }
 
-.difficultyGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-
-.difficultyBtn {
-  min-height: 72px;
-  padding: 12px 10px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--code-bg);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  transition: all 0.15s ease;
-}
-
-.diffName {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text-h);
-}
-
-.diffDesc {
-  font-size: 11px;
-  color: var(--text);
-  text-align: center;
-  line-height: 1.3;
-}
-
-.activeDiffBtn {
-  background: var(--accent-bg);
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent);
-}
-
-.activeDiffBtn .diffName {
-  color: var(--accent);
-}
-
 .segmentedRow {
   display: flex;
   border: 1px solid var(--border);
@@ -223,9 +179,6 @@
 }
 
 @media (max-width: 600px) {
-  .difficultyGrid {
-    grid-template-columns: 1fr;
-  }
   .bottomActions {
     flex-direction: column-reverse;
   }

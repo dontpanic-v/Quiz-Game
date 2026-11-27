@@ -14,19 +14,16 @@ import {
 } from '../siteConfig.js'
 import { useSettings } from '../hooks/useSettings.js'
 import { CAMBODIA_CATEGORIES, countCambodiaQuestions } from '../data/cambodia/index.js'
+import BackButton from '../components/Layout/BackButton.jsx'
+import ConfirmDialog from '../components/Layout/ConfirmDialog.jsx'
 import styles from './SettingsPage.module.css'
-
-const DIFFICULTY_DESCRIPTIONS = {
-  easy: 'Casual and relaxed pace',
-  medium: 'Standard trivia challenge',
-  hard: 'High intensity: 10s per question',
-}
 
 export default function SettingsPage() {
   const navigate = useNavigate()
   const { settings, updateSettings } = useSettings()
 
   const [savedVisible, setSavedVisible] = useState(false)
+  const [confirmReset, setConfirmReset] = useState(false)
   const savedTimerRef = useRef(null)
 
   // Show the "Saved" badge for a moment
@@ -66,15 +63,16 @@ export default function SettingsPage() {
     ? countCambodiaQuestions({ difficulty: settings.difficulty, category: categoryValue })
     : 0
 
-  function handleReset() {
-    if (window.confirm('Reset all settings to default values?')) {
-      updateSettings(DEFAULT_SETTINGS)
-      triggerSavedBadge()
-    }
+  function handleConfirmReset() {
+    updateSettings(DEFAULT_SETTINGS)
+    setConfirmReset(false)
+    triggerSavedBadge()
   }
 
   return (
     <div className={styles.container}>
+      <BackButton to={ROUTES.home}>Home</BackButton>
+
       <header className={styles.header}>
         <div className={styles.headerTitleRow}>
           <h1 className={styles.title}>Quiz Settings</h1>
@@ -129,7 +127,7 @@ export default function SettingsPage() {
         {/* Difficulty */}
         <section className={styles.section}>
           <span className={styles.sectionLabel}>Difficulty</span>
-          <div className={styles.difficultyGrid} role="radiogroup" aria-label="Difficulty level">
+          <div className={styles.segmentedRow} role="radiogroup" aria-label="Difficulty">
             {DIFFICULTIES.map((diff) => {
               const isSelected = settings.difficulty === diff
               return (
@@ -139,14 +137,9 @@ export default function SettingsPage() {
                   role="radio"
                   aria-checked={isSelected}
                   onClick={() => handleChange('difficulty', diff)}
-                  className={`${styles.difficultyBtn} ${isSelected ? styles.activeDiffBtn : ''}`}
+                  className={`${styles.segmentBtn} ${isSelected ? styles.activeSegmentBtn : ''}`}
                 >
-                  <span className={styles.diffName}>
-                    {diff.charAt(0).toUpperCase() + diff.slice(1)}
-                  </span>
-                  <span className={styles.diffDesc}>
-                    {DIFFICULTY_DESCRIPTIONS[diff]}
-                  </span>
+                  {diff.charAt(0).toUpperCase() + diff.slice(1)}
                 </button>
               )
             })}
@@ -210,7 +203,7 @@ export default function SettingsPage() {
         <div className={styles.bottomActions}>
           <button
             type="button"
-            onClick={handleReset}
+            onClick={() => setConfirmReset(true)}
             className={styles.resetBtn}
           >
             Reset to defaults
@@ -224,6 +217,16 @@ export default function SettingsPage() {
           </button>
         </div>
       </form>
+
+      <ConfirmDialog
+        open={confirmReset}
+        title="Reset all settings?"
+        message="Your name, question source, difficulty, number of questions and category will go back to the defaults."
+        confirmLabel="Reset settings"
+        cancelLabel="Keep my settings"
+        onConfirm={handleConfirmReset}
+        onCancel={() => setConfirmReset(false)}
+      />
     </div>
   )
 }

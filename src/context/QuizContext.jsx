@@ -28,6 +28,12 @@
  *                      Ignored (returns false) if the current question was already answered.
  *   nextQuestion     () => void   index + 1, or status 'finished' after the last question
  *   resetQuiz        () => void   back to empty + 'idle'
+ *   abandonQuiz      () => void   if a game is 'playing', stop it ('idle'); otherwise no-op.
+ *                      Used when the quiz page closes mid-game (e.g. browser Back).
+ *   leaveTarget      string | null   path the player asked to go to mid-game; while set,
+ *                      QuizPage shows the "Leave this quiz?" dialog and pauses the timer
+ *   requestLeave     (to: string) => void   ask to leave the game for `to`
+ *   cancelLeave      () => void   close the dialog and keep playing
  *
  *   Question     = { id, question, answers: string[], correctAnswer, difficulty, category }
  *   AnswerRecord = { questionId, selected: string | null, isCorrect: boolean }
@@ -43,6 +49,7 @@ export function QuizProvider({ children }) {
   const [answers, setAnswers] = useState([])
   const [status, setStatus] = useState('idle')
   const [quizMeta, setQuizMeta] = useState(EMPTY_META)
+  const [leaveTarget, setLeaveTarget] = useState(null)
 
   // Derived values: calculated on every render, never stored in state.
   const currentQuestion = questions[currentIndex] ?? null
@@ -54,6 +61,7 @@ export function QuizProvider({ children }) {
     setCurrentIndex(0)
     setAnswers([])
     setQuizMeta({ ...EMPTY_META, ...meta })
+    setLeaveTarget(null)
     setStatus('playing')
   }, [])
 
@@ -85,8 +93,17 @@ export function QuizProvider({ children }) {
     setCurrentIndex(0)
     setAnswers([])
     setQuizMeta(EMPTY_META)
+    setLeaveTarget(null)
     setStatus('idle')
   }, [])
+
+  const abandonQuiz = useCallback(() => {
+    setLeaveTarget(null)
+    setStatus((prev) => (prev === 'playing' ? 'idle' : prev))
+  }, [])
+
+  const requestLeave = useCallback((to) => setLeaveTarget(to), [])
+  const cancelLeave = useCallback(() => setLeaveTarget(null), [])
 
   const value = useMemo(
     () => ({
@@ -102,6 +119,10 @@ export function QuizProvider({ children }) {
       submitAnswer,
       nextQuestion,
       resetQuiz,
+      abandonQuiz,
+      leaveTarget,
+      requestLeave,
+      cancelLeave,
     }),
     [
       questions,
@@ -116,6 +137,10 @@ export function QuizProvider({ children }) {
       submitAnswer,
       nextQuestion,
       resetQuiz,
+      abandonQuiz,
+      leaveTarget,
+      requestLeave,
+      cancelLeave,
     ],
   )
 

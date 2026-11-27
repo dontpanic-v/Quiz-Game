@@ -16,6 +16,8 @@ import { shuffle } from "../utils/shuffle.js";
 
 import ProgressBar from "../components/Quiz/ProgressBar.jsx";
 import QuestionCard from "../components/Quiz/QuestionCard.jsx";
+import ConfirmDialog from "../components/Layout/ConfirmDialog.jsx";
+import BackButton from "../components/Layout/BackButton.jsx";
 
 import { ROUTES, OPEN_TRIVIA_CATEGORIES } from "../siteConfig.js";
 import styles from "./QuizPage.module.css";
@@ -42,9 +44,15 @@ export default function QuizPage() {
     total,
     score,
     status,
+    answers,
     startQuiz,
     submitAnswer,
     nextQuestion,
+    resetQuiz,
+    abandonQuiz,
+    leaveTarget,
+    requestLeave,
+    cancelLeave,
   } = useQuiz();
 
   const { getQuiz } = useQuizLibrary();
@@ -63,7 +71,7 @@ export default function QuizPage() {
 
   const difficulty = currentQuestion?.difficulty || settings.difficulty;
 
-  const { secondsLeft, stop, reset } = useTimer(
+  const { secondsLeft, isRunning, start, stop, reset } = useTimer(
     secondsFor(difficulty),
     handleTimeUp,
   );
@@ -192,6 +200,44 @@ export default function QuizPage() {
     }
   }, [status, loading, error, navigate]);
 
+  // Pause the clock while the "Leave this quiz?" dialog is open, so deciding is free.
+  const pausedForLeaveRef = useRef(false);
+
+  useEffect(() => {
+    if (leaveTarget && isRunning) {
+      pausedForLeaveRef.current = true;
+      stop();
+    } else if (!leaveTarget && pausedForLeaveRef.current) {
+      pausedForLeaveRef.current = false;
+      start();
+    }
+  }, [leaveTarget, isRunning, start, stop]);
+
+  // Leaving the page mid-game any other way (e.g. the browser Back button) ends the game.
+  useEffect(() => () => abandonQuiz(), [abandonQuiz]);
+
+  // Closing or reloading the tab mid-game: let the browser show its own warning.
+  useEffect(() => {
+    if (status !== "playing") return;
+
+    function handleBeforeUnload(event) {
+      event.preventDefault();
+      event.returnValue = "";
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [status]);
+
+  // Custom quizzes go back to the library, other quizzes go home.
+  const exitPath = setId !== null ? ROUTES.myQuizzes : ROUTES.home;
+
+  function handleConfirmLeave() {
+    const to = leaveTarget ?? exitPath;
+    resetQuiz();
+    navigate(to);
+  }
+
   function handleSelect(answer) {
     if (answeredRef.current) return;
 
@@ -253,8 +299,12 @@ export default function QuizPage() {
     return null;
   }
 
+  const answeredCount = answers.length;
+
   return (
     <div className={styles.container}>
+      <BackButton onClick={() => requestLeave(exitPath)}>Leave quiz</BackButton>
+
       <ProgressBar
         current={currentIndex + 1}
         total={total}
@@ -280,6 +330,20 @@ export default function QuizPage() {
           </button>
         </div>
       )}
+
+      <ConfirmDialog
+        open={leaveTarget !== null}
+        title="Leave this quiz?"
+        message={
+          answeredCount === 0
+            ? "You haven't answered any questions yet. This game won't be saved."
+            : `You've answered ${answeredCount} of ${total} questions. If you leave now, this game won't be saved to the leaderboard.`
+        }
+        confirmLabel="Leave quiz"
+        cancelLabel="Keep playing"
+        onConfirm={handleConfirmLeave}
+        onCancel={cancelLeave}
+      />
     </div>
   );
 }

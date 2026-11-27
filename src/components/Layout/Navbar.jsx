@@ -14,7 +14,8 @@
  *   - App name on the left, links to Home, My Quizzes, Leaderboard, Settings
  *   - Active link is highlighted
  *   - Under 640px links collapse behind a menu button; menu closes after a click
- *   - While a quiz is playing, leaving asks for confirmation first
+ *   - While a quiz is playing, a link click calls requestLeave(to) instead of navigating;
+ *     QuizPage then shows the "Leave this quiz?" dialog
  */
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
@@ -29,19 +30,18 @@ const LINKS = [
   { to: ROUTES.settings, label: 'Settings' },
 ]
 
-const LEAVE_MESSAGE = 'Leave the quiz? Your progress will be lost.'
-
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
-  const { status } = useQuiz()
+  const { status, requestLeave } = useQuiz()
 
-  // Runs on every link click: stops navigation if the player cancels leaving a quiz.
-  function handleNavigate(event) {
-    if (status === 'playing' && !window.confirm(LEAVE_MESSAGE)) {
-      event.preventDefault()
-      return
-    }
+  // Runs on every link click. Mid-game, hold the navigation and let QuizPage ask
+  // "Leave this quiz?" (the same dialog as its own Leave button, with the timer paused).
+  function handleNavigate(event, to) {
     setIsOpen(false)
+    if (status === 'playing') {
+      event.preventDefault()
+      requestLeave(to)
+    }
   }
 
   function linkClass(base, active) {
@@ -51,7 +51,11 @@ export default function Navbar() {
   return (
     <header className={styles.navbarWrapper}>
       <nav className={styles.navbar} aria-label="Main">
-        <Link to={ROUTES.home} className={styles.brand} onClick={handleNavigate}>
+        <Link
+          to={ROUTES.home}
+          className={styles.brand}
+          onClick={(event) => handleNavigate(event, ROUTES.home)}
+        >
           <span>{APP_NAME}</span>
         </Link>
 
@@ -61,7 +65,7 @@ export default function Navbar() {
               key={to}
               to={to}
               end={to === ROUTES.home}
-              onClick={handleNavigate}
+              onClick={(event) => handleNavigate(event, to)}
               className={linkClass(styles.navLink, styles.activeNavLink)}
             >
               {label}
@@ -89,7 +93,7 @@ export default function Navbar() {
               key={to}
               to={to}
               end={to === ROUTES.home}
-              onClick={handleNavigate}
+              onClick={(event) => handleNavigate(event, to)}
               className={linkClass(styles.mobileNavLink, styles.activeNavLink)}
             >
               {label}

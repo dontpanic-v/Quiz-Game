@@ -4,6 +4,7 @@
  */
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../../siteConfig.js'
+import Medal from './Medal.jsx'
 import styles from './ScoreTable.module.css'
 
 export default function ScoreTable({ results = [] }) {
@@ -16,13 +17,6 @@ export default function ScoreTable({ results = [] }) {
         </Link>
       </div>
     )
-  }
-
-  function getRankBadge(index) {
-    if (index === 0) return '🥇 1'
-    if (index === 1) return '🥈 2'
-    if (index === 2) return '🥉 3'
-    return `${index + 1}`
   }
 
   return (
@@ -47,7 +41,10 @@ export default function ScoreTable({ results = [] }) {
             return (
               <tr key={result.id || idx} className={styles.row}>
                 <td className={styles.tdRank} data-label="Rank">
-                  <span className={styles.rankBadge}>{getRankBadge(idx)}</span>
+                  <span className={styles.rankBadge}>
+                    <Medal rank={idx + 1} />
+                    {idx + 1}
+                  </span>
                 </td>
                 <td className={styles.tdPlayer} data-label="Player">
                   {result.playerName || 'Anonymous'}

@@ -10,7 +10,8 @@
  * EXPORT
  *   export function useQuiz()
  *   -> { questions, currentIndex, currentQuestion, answers, score, total, status,
- *        quizMeta, startQuiz, submitAnswer, nextQuestion, resetQuiz }
+ *        quizMeta, startQuiz, submitAnswer, nextQuestion, resetQuiz, abandonQuiz,
+ *        leaveTarget, requestLeave, cancelLeave }
  */
 import { useContext } from 'react'
 import { QuizContext } from '../context/quizContextObject.js'
