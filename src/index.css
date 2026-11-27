@@ -136,16 +136,6 @@ textarea {
   outline-offset: 2px;
 }
 
-/* Temporary "page coming soon" block used in App.jsx */
-.placeholder {
-  text-align: center;
-  padding: 64px 0;
-}
-
-.placeholder p {
-  margin: 0 0 24px;
-}
-
 @media (max-width: 640px) {
   h1 {
     font-size: 28px;
