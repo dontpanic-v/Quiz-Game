@@ -6,6 +6,7 @@ import { useQuiz } from "../hooks/useQuiz.js";
 import { useSettings } from "../hooks/useSettings.js";
 import { ROUTES } from "../siteConfig.js";
 
+import InlineCode from "../components/Quiz/InlineCode.jsx";
 import styles from "./ResultsPage.module.css";
 
 export default function ResultsPage() {
@@ -108,20 +109,26 @@ export default function ResultsPage() {
           return (
             <article key={question.id} className={styles.reviewCard}>
               <h3>
-                {index + 1}. {question.question}
+                {index + 1}. <InlineCode text={question.question} />
               </h3>
 
               <p className={isCorrect ? styles.correct : styles.wrong}>
                 Your answer:{" "}
-                {playerAnswer == null
-                  ? "⏱ Time's up"
-                  : isCorrect
-                    ? `✓ ${playerAnswer}`
-                    : `✗ ${playerAnswer}`}
+                {playerAnswer == null ? (
+                  "⏱ Time's up"
+                ) : (
+                  <>
+                    {isCorrect ? "✓ " : "✗ "}
+                    <InlineCode text={playerAnswer} />
+                  </>
+                )}
               </p>
 
               <p>
-                Correct answer: <strong>{question.correctAnswer}</strong>
+                Correct answer:{" "}
+                <strong>
+                  <InlineCode text={question.correctAnswer} />
+                </strong>
               </p>
             </article>
           );

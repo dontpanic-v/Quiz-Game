@@ -24,9 +24,32 @@
 import { useCallback, useMemo } from 'react'
 import { SettingsContext } from './settingsContextObject.js'
 import { useLocalStorage } from '../hooks/useLocalStorage.js'
-import { DEFAULT_SETTINGS, QUESTION_AMOUNTS, STORAGE_KEYS } from '../siteConfig.js'
+import {
+  DEFAULT_SETTINGS,
+  OPEN_TRIVIA_CATEGORIES,
+  QUESTION_AMOUNTS,
+  QUESTION_SOURCES,
+  STORAGE_KEYS,
+} from '../siteConfig.js'
+import { CAMBODIA_CATEGORIES } from '../data/cambodia/index.js'
 
 const EMPTY_HISTORY = []
+
+// Saved settings can come from an older version of the app. Anything that is no longer a
+// valid choice falls back to its default, so the rest of the app can trust these values.
+function cleanSettings(saved) {
+  const source = QUESTION_SOURCES.some((s) => s.id === saved.source)
+    ? saved.source
+    : DEFAULT_SETTINGS.source
+  const categories = source === 'cambodia' ? CAMBODIA_CATEGORIES : OPEN_TRIVIA_CATEGORIES
+  const category = categories.some((c) => c.id === saved.category) ? saved.category : ''
+  const amount = QUESTION_AMOUNTS.includes(saved.amount) ? saved.amount : DEFAULT_SETTINGS.amount
+
+  if (source === saved.source && category === saved.category && amount === saved.amount) {
+    return saved
+  }
+  return { ...saved, source, category, amount }
+}
 
 export function SettingsProvider({ children }) {
   const [settings, setSettings] = useLocalStorage(STORAGE_KEYS.settings, DEFAULT_SETTINGS)
@@ -48,14 +71,7 @@ export function SettingsProvider({ children }) {
 
   const clearHistory = useCallback(() => setHistory([]), [setHistory])
 
-  // An amount saved before the options changed (e.g. 20) falls back to the default.
-  const safeSettings = useMemo(
-    () =>
-      QUESTION_AMOUNTS.includes(settings.amount)
-        ? settings
-        : { ...settings, amount: DEFAULT_SETTINGS.amount },
-    [settings],
-  )
+  const safeSettings = useMemo(() => cleanSettings(settings), [settings])
 
   const value = useMemo(
     () => ({

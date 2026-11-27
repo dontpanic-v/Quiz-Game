@@ -30,7 +30,7 @@ export const OPEN_TRIVIA_CATEGORIES = [
 
 export const DEFAULT_SETTINGS = {
   playerName: '',
-  source: 'opentdb', // one of QUESTION_SOURCES ids
+  source: 'cambodia', // one of QUESTION_SOURCES ids
   difficulty: 'easy', // one of DIFFICULTIES
   amount: 10, // one of QUESTION_AMOUNTS
   category: '', // '' = any category; Open Trivia id or Cambodia category id, per source

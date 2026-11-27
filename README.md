@@ -168,14 +168,16 @@ The leaderboard sorts by percentage (highest first), then by date (newest first)
 
 | Key                   | Value             | Default                                                          |
 | --------------------- | ----------------- | ---------------------------------------------------------------- |
-| `quiz-game:settings`  | settings object   | `{ playerName: '', source: 'opentdb', difficulty: 'easy', amount: 10, category: '' }` |
+| `quiz-game:settings`  | settings object   | `{ playerName: '', source: 'cambodia', difficulty: 'easy', amount: 10, category: '' }` |
 | `quiz-game:history`   | `HistoryEntry[]`  | `[]`                                                             |
-| `quiz-game:quizzes`   | `CustomQuiz[]`    | one sample quiz, "Web Dev Basics"                                |
+| `quiz-game:quizzes`   | `CustomQuiz[]`    | one sample quiz, "React Hooks Quiz" (20 questions)               |
 
 `useLocalStorage(key, initialValue)` behaves like `useState` and also:
 
 - reads the saved value once on mount and writes it back on every change;
 - merges saved objects over the defaults, so new settings fields get a default value;
+- (in `SettingsContext`) replaces saved values that are no longer valid, such as an old
+  question amount or a category from the other source, with the default;
 - falls back to the default when the stored JSON is missing or broken;
 - ignores write errors (private mode, full storage);
 - listens to the `storage` event, so other open tabs stay in sync.
@@ -242,6 +244,11 @@ Each question looks like this:
   up to the chosen amount.
 - Write questions in your own words. Quiz websites such as FunTrivia are copyrighted, so
   do not copy their questions.
+
+**Code in questions.** In any question or answer (Cambodia bank or custom quizzes), text
+wrapped in backticks is shown in a code font, e.g. ``What does `useMemo` do?``. This is
+done by `components/Quiz/InlineCode.jsx`, which builds React elements only, so typed text
+is never run as HTML.
 
 ## Shared UI patterns
 

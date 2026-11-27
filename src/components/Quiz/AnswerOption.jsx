@@ -1,4 +1,5 @@
 
+import InlineCode from './InlineCode.jsx';
 import styles from './AnswerOption.module.css';
 
 export default function AnswerOption({ text, state, onClick }) {
@@ -9,7 +10,7 @@ export default function AnswerOption({ text, state, onClick }) {
             disabled={state !== 'idle'}
             onClick={onClick}
         >
-            <span>{text}</span>
+            <span><InlineCode text={text} /></span>
 
             {state === 'correct' && <span>✓ Correct</span>}
             {state === 'wrong' && <span>✗ Wrong</span>}

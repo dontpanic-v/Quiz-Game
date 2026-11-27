@@ -1,4 +1,6 @@
 .fieldset {
+  /* A fieldset will not shrink below its content by default; this keeps it inside phones. */
+  min-width: 0;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--bg);

@@ -54,12 +54,14 @@
   gap: 8px;
   border-bottom: 1px solid var(--border);
   padding-bottom: 12px;
-  overflow-x: auto;
 }
 
+/* Filters share the row equally, so all four stay visible on small phones. */
 .tab {
+  flex: 1 1 0;
+  min-width: 0;
   min-height: 44px;
-  padding: 8px 18px;
+  padding: 8px 6px;
   background: var(--code-bg);
   border: 1px solid var(--border);
   border-radius: 8px;

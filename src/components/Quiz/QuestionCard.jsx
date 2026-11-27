@@ -1,5 +1,6 @@
 
 import AnswerOption from './AnswerOption.jsx';
+import InlineCode from './InlineCode.jsx';
 import styles from './QuestionCard.module.css';
 
 export default function QuestionCard({
@@ -25,15 +26,17 @@ export default function QuestionCard({
     }
 
     function getFeedback() {
+        const answer = <InlineCode text={question.correctAnswer} />;
+
         if (selected === null) {
-            return `⏱ Time's up! The answer was ${question.correctAnswer}`;
+            return <>⏱ Time's up! The answer was {answer}</>;
         }
 
         if (selected === question.correctAnswer) {
             return '✓ Correct!';
         }
 
-        return `✗ Wrong, the answer was ${question.correctAnswer}`;
+        return <>✗ Wrong, the answer was {answer}</>;
     }
 
     return (
@@ -49,7 +52,7 @@ export default function QuestionCard({
             </div>
 
             <h2 className={styles.question}>
-                {question.question}
+                <InlineCode text={question.question} />
             </h2>
 
             <div className={styles.answers}>
