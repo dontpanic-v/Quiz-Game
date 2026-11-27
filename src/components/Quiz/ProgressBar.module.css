@@ -25,8 +25,12 @@
     font-variant-numeric: tabular-nums;
 }
 
+/* Last 5 seconds: warm amber chip ("hurry"), not red, because nothing is wrong yet. */
 .warning {
-    color: var(--danger);
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: var(--warning-bg);
+    color: var(--warning);
     font-weight: 700;
 }
 

@@ -240,7 +240,20 @@ Each question looks like this:
 ## Styling
 
 - `src/index.css` defines the design tokens as CSS variables (`--text`, `--bg`, `--accent`,
-  `--border`, …) for a black, white and navy theme, plus shared base styles such as `.button`.
+  `--success`, …) plus shared base styles such as `.button`. Use the tokens instead of
+  hard-coded colors.
+- The palette follows a few perception rules so the important things stand out:
+  - **Calm base, one loud accent.** Neutrals are cool and low in saturation; a single
+    saturated blue (`--accent`) marks actions and the current selection. One element that
+    differs in color is spotted at a glance and remembered better.
+  - **About 60 / 30 / 10.** Mostly white and light surfaces, navy for headings, blue accent
+    for a small share of the screen.
+  - **Contrast first.** All text meets WCAG AA (at least 4.5:1) and borders at least 3:1.
+  - **Clear feedback.** Emerald for correct, red for wrong, amber for the last 5 seconds of
+    the timer. The green leans toward teal so players with red-green color blindness still
+    see a difference, and every state also has an icon or text label.
+  - Colors were picked in OKLCH, a color space where equal steps look equally different,
+    and stored as hex.
 - Each component has a `Name.module.css` next to it, so class names never clash.
 - The layout is a single column, at most 720px wide, with 16px side padding on phones.
   Answer options use a 2×2 grid on desktop and one column on small screens.

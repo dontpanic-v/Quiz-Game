@@ -38,9 +38,10 @@
     font-weight: 600;
 }
 
+/* Answers that were not picked fade back, so correct / wrong stand out. */
 .disabled {
     background: var(--bg);
-    color: var(--text);
+    color: var(--text-muted);
     border: 1px dashed var(--border);
 }
 

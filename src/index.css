@@ -2,37 +2,62 @@
  * index.css — global styles and color variables.
  * OWNER   dontpanic (only dontpanic edits this file)
  *
- * Palette: exactly 3 solid colors — black #000000, white #ffffff, navy #1a2b5f.
- * No grays, no other colors, no rgba / transparency / gradients.
+ * Palette rules (why things "pop"):
+ *   - Calm base, one loud accent. Neutrals are low-chroma and cool, so the single saturated
+ *     blue accent is the only thing that differs in color. A lone color difference is found
+ *     pre-attentively (pop-out) and remembered better (isolation effect). Keep the accent for
+ *     actions and the current selection; do not use it for decoration.
+ *   - Roughly 60% neutral (--bg, --surface), 30% navy brand (--text-h headings),
+ *     10% accent.
+ *   - Meaning comes from lightness contrast first: every text pair is >= 4.5:1 (WCAG AA),
+ *     borders and controls >= 3:1.
+ *   - Status colors: emerald for correct, red for wrong, amber for "hurry". Emerald leans
+ *     toward teal so red-green color-blind players still see a hue difference. Always keep
+ *     an icon or a text label as well: color is never the only signal.
+ *   - Do not put red text on the blue accent (or blue on red): the pair "vibrates"
+ *     (chromostereopsis) and is tiring to read.
+ *   - Values were chosen in OKLCH (perceptual lightness, chroma, hue) and stored as hex.
+ *
  * Use these variables in your *.module.css instead of hard-coded colors:
- *   surfaces   --bg  --code-bg  --social-bg  --border  --shadow
- *   text       --text  --text-h
+ *   surfaces   --bg  --surface (= --code-bg)  --border  --shadow
+ *   text       --text  --text-h  --text-muted
  *   accent     --accent  --accent-hover  --accent-bg  --accent-border  --accent-text  --on-accent
  *   status     --success / --success-bg   --warning / --warning-bg   --danger / --danger-bg
- *              (success = black, warning + danger = navy: pair with a text label too)
+ *   celebrate  --highlight / --on-highlight   (scores and wins only, use rarely)
  */
 
 :root {
-  /* white background, black text, navy accent */
-  --text: #000000;
-  --text-h: #000000;
+  /* neutrals: cool, low chroma */
+  --text: #141a29; /* oklch(0.22 0.03 265)  17.4:1 on white */
+  --text-h: #172a5a; /* oklch(0.30 0.09 265)  navy brand, 13.9:1 */
+  --text-muted: #5c6372; /* oklch(0.50 0.025 265) 6.0:1 */
   --bg: #ffffff;
-  --border: #000000;
-  --code-bg: #ffffff;
-  --social-bg: #ffffff;
-  --accent: #1a2b5f;
-  --accent-hover: #000000;
-  --accent-bg: #ffffff;
-  --accent-border: #1a2b5f;
-  --accent-text: #1a2b5f;
+  --surface: #f4f7fc; /* oklch(0.975 0.008 265) */
+  --code-bg: var(--surface);
+  --social-bg: var(--surface);
+  --border: #7a808d; /* oklch(0.60 0.02 265)   4.0:1, controls stay visible */
+
+  /* accent: the one saturated hue */
+  --accent: #2154d8; /* oklch(0.50 0.21 264)   white text 6.3:1 */
+  --accent-hover: #123eb2; /* oklch(0.42 0.19 264) */
+  --accent-bg: #e4efff; /* oklch(0.95 0.03 264) */
+  --accent-border: #2154d8;
+  --accent-text: #2154d8;
   --on-accent: #ffffff;
-  --success: #000000;
-  --success-bg: #ffffff;
-  --warning: #1a2b5f;
-  --warning-bg: #ffffff;
-  --danger: #1a2b5f;
-  --danger-bg: #ffffff;
-  --shadow: 0 1px 0 #000000;
+
+  /* status */
+  --success: #00715a; /* oklch(0.48 0.11 175)   emerald, 5.3:1 on its bg */
+  --success-bg: #d4f8ed;
+  --warning: #a05000; /* oklch(0.52 0.13 55)    amber, 5.1:1 on its bg */
+  --warning-bg: #fff0cc;
+  --danger: #c51e21; /* oklch(0.53 0.20 27)    red, 5.0:1 on its bg */
+  --danger-bg: #ffe7e6;
+
+  /* celebration */
+  --highlight: #f7cc4b; /* oklch(0.86 0.15 90)    gold, use with dark text */
+  --on-highlight: #141a29; /* 11.3:1 */
+
+  --shadow: 0 1px 2px rgb(20 26 41 / 0.08), 0 4px 12px rgb(20 26 41 / 0.06);
 
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;

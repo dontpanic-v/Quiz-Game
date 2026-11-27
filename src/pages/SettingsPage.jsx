@@ -29,7 +29,7 @@ export default function SettingsPage() {
   const [savedVisible, setSavedVisible] = useState(false)
   const savedTimerRef = useRef(null)
 
-  // Trigger transient "Saved ✓" text
+  // Show the "Saved" badge for a moment
   function triggerSavedBadge() {
     setSavedVisible(true)
     if (savedTimerRef.current) clearTimeout(savedTimerRef.current)
